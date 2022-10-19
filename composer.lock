@@ -4,7 +4,7 @@
     "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
     "This file is @generated automatically"
   ],
-  "content-hash": "af28319a55aaebb6270b93edf102bf8f",
+  "content-hash": "e6b80d40c08a830d3b5f33191de8ca70",
   "packages": [
     {
       "name": "api-platform/core",
@@ -1982,16 +1982,16 @@
       "extra": {
         "branch-alias": {
           "dev-master": "1.0.x-dev"
-                }
-            },
-            "autoload": {
-                "psr-4": {
-                    "Psr\\Cache\\": "src/"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
+        }
+      },
+      "autoload": {
+        "psr-4": {
+          "Psr\\Cache\\": "src/"
+        }
+      },
+      "notification-url": "https://packagist.org/downloads/",
+      "license": [
+        "MIT"
             ],
             "authors": [
                 {
@@ -2091,16 +2091,16 @@
                     "Psr\\EventDispatcher\\": "src/"
                 }
             },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                  "name": "PHP-FIG",
-                  "homepage": "http://www.php-fig.org/"
-                }
-            ],
+          "notification-url": "https://packagist.org/downloads/",
+          "license": [
+            "MIT"
+          ],
+          "authors": [
+            {
+              "name": "PHP-FIG",
+              "homepage": "http://www.php-fig.org/"
+            }
+          ],
           "description": "Standard interfaces for event handling.",
           "keywords": [
             "events",
@@ -2190,23 +2190,23 @@
       "extra": {
         "branch-alias": {
           "dev-master": "3.x-dev"
-                }
-            },
-            "autoload": {
-                "psr-4": {
-                    "Psr\\Log\\": "src"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "PHP-FIG",
-                  "homepage": "https://www.php-fig.org/"
-                }
-            ],
+        }
+      },
+      "autoload": {
+        "psr-4": {
+          "Psr\\Log\\": "src"
+        }
+      },
+      "notification-url": "https://packagist.org/downloads/",
+      "license": [
+        "MIT"
+      ],
+      "authors": [
+        {
+          "name": "PHP-FIG",
+          "homepage": "https://www.php-fig.org/"
+        }
+      ],
       "description": "Common interface for logging libraries",
       "homepage": "https://github.com/php-fig/log",
       "keywords": [
@@ -2312,16 +2312,16 @@
         "symfony/cache-contracts": "^1.1.7|^2|^3",
         "symfony/service-contracts": "^1.1|^2|^3",
         "symfony/var-exporter": "^5.4|^6.0"
-            },
-            "conflict": {
-                "doctrine/dbal": "<2.13.1",
-                "symfony/dependency-injection": "<5.4",
-                "symfony/http-kernel": "<5.4",
-                "symfony/var-dumper": "<5.4"
-            },
-            "provide": {
-                "psr/cache-implementation": "2.0|3.0",
-                "psr/simple-cache-implementation": "1.0|2.0|3.0",
+      },
+      "conflict": {
+        "doctrine/dbal": "<2.13.1",
+        "symfony/dependency-injection": "<5.4",
+        "symfony/http-kernel": "<5.4",
+        "symfony/var-dumper": "<5.4"
+      },
+      "provide": {
+        "psr/cache-implementation": "2.0|3.0",
+        "psr/simple-cache-implementation": "1.0|2.0|3.0",
                 "symfony/cache-implementation": "1.1|2.0|3.0"
             },
             "require-dev": {
@@ -2929,16 +2929,16 @@
         "symfony/console": "<5.4"
       },
       "require-dev": {
-                "symfony/console": "^5.4|^6.0",
-                "symfony/process": "^5.4|^6.0"
-            },
-            "type": "library",
-            "autoload": {
-                "psr-4": {
-                    "Symfony\\Component\\Dotenv\\": ""
-                },
-                "exclude-from-classmap": [
-                    "/Tests/"
+        "symfony/console": "^5.4|^6.0",
+        "symfony/process": "^5.4|^6.0"
+      },
+      "type": "library",
+      "autoload": {
+        "psr-4": {
+          "Symfony\\Component\\Dotenv\\": ""
+        },
+        "exclude-from-classmap": [
+          "/Tests/"
                 ]
             },
             "notification-url": "https://packagist.org/downloads/",
@@ -3298,16 +3298,16 @@
       },
       "type": "library",
       "autoload": {
-                "psr-4": {
-                    "Symfony\\Component\\Filesystem\\": ""
-                },
-                "exclude-from-classmap": [
-                    "/Tests/"
-                ]
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
+        "psr-4": {
+          "Symfony\\Component\\Filesystem\\": ""
+        },
+        "exclude-from-classmap": [
+          "/Tests/"
+        ]
+      },
+      "notification-url": "https://packagist.org/downloads/",
+      "license": [
+        "MIT"
             ],
             "authors": [
                 {
@@ -3898,16 +3898,16 @@
         "ext-intl": "For best performance"
       },
       "type": "library",
-            "extra": {
-                "branch-alias": {
-                    "dev-main": "1.26-dev"
-                },
-                "thanks": {
-                    "name": "symfony/polyfill",
-                    "url": "https://github.com/symfony/polyfill"
-                }
-            },
-            "autoload": {
+      "extra": {
+        "branch-alias": {
+          "dev-main": "1.26-dev"
+        },
+        "thanks": {
+          "name": "symfony/polyfill",
+          "url": "https://github.com/symfony/polyfill"
+        }
+      },
+      "autoload": {
                 "files": [
                     "bootstrap.php"
                 ],
@@ -4380,16 +4380,16 @@
         "doctrine/annotations": "<1.12",
         "symfony/config": "<5.4",
         "symfony/dependency-injection": "<5.4",
-                "symfony/yaml": "<5.4"
-            },
-            "require-dev": {
-                "doctrine/annotations": "^1.12",
-                "psr/log": "^1|^2|^3",
-                "symfony/config": "^5.4|^6.0",
-                "symfony/dependency-injection": "^5.4|^6.0",
-                "symfony/expression-language": "^5.4|^6.0",
-                "symfony/http-foundation": "^5.4|^6.0",
-                "symfony/yaml": "^5.4|^6.0"
+        "symfony/yaml": "<5.4"
+      },
+      "require-dev": {
+        "doctrine/annotations": "^1.12",
+        "psr/log": "^1|^2|^3",
+        "symfony/config": "^5.4|^6.0",
+        "symfony/dependency-injection": "^5.4|^6.0",
+        "symfony/expression-language": "^5.4|^6.0",
+        "symfony/http-foundation": "^5.4|^6.0",
+        "symfony/yaml": "^5.4|^6.0"
             },
             "suggest": {
                 "symfony/config": "For using the all-in-one router or any loader",
@@ -4990,16 +4990,16 @@
       "conflict": {
         "ext-psr": "<1.1|>=2"
       },
-            "suggest": {
-                "symfony/service-implementation": ""
-            },
-            "type": "library",
-            "extra": {
-                "branch-alias": {
-                    "dev-main": "3.1-dev"
-                },
-                "thanks": {
-                    "name": "symfony/contracts",
+      "suggest": {
+        "symfony/service-implementation": ""
+      },
+      "type": "library",
+      "extra": {
+        "branch-alias": {
+          "dev-main": "3.1-dev"
+        },
+        "thanks": {
+          "name": "symfony/contracts",
                     "url": "https://github.com/symfony/contracts"
                 }
             },
@@ -5137,16 +5137,16 @@
         "symfony/polyfill-intl-normalizer": "~1.0",
         "symfony/polyfill-mbstring": "~1.0"
       },
-            "conflict": {
-                "symfony/translation-contracts": "<2.0"
-            },
-            "require-dev": {
-                "symfony/error-handler": "^5.4|^6.0",
-                "symfony/http-client": "^5.4|^6.0",
-                "symfony/translation-contracts": "^2.0|^3.0",
-                "symfony/var-exporter": "^5.4|^6.0"
-            },
-            "type": "library",
+      "conflict": {
+        "symfony/translation-contracts": "<2.0"
+      },
+      "require-dev": {
+        "symfony/error-handler": "^5.4|^6.0",
+        "symfony/http-client": "^5.4|^6.0",
+        "symfony/translation-contracts": "^2.0|^3.0",
+        "symfony/var-exporter": "^5.4|^6.0"
+      },
+      "type": "library",
             "autoload": {
                 "files": [
                     "Resources/functions.php"
@@ -5619,16 +5619,16 @@
       "conflict": {
         "phpunit/phpunit": "<5.4.3",
         "symfony/console": "<5.4"
-            },
-            "require-dev": {
-                "ext-iconv": "*",
-                "symfony/console": "^5.4|^6.0",
-                "symfony/process": "^5.4|^6.0",
-                "symfony/uid": "^5.4|^6.0",
-                "twig/twig": "^2.13|^3.0.4"
-            },
-            "suggest": {
-                "ext-iconv": "To convert non-UTF-8 strings to UTF-8 (or symfony/polyfill-iconv in case ext-iconv cannot be used).",
+      },
+      "require-dev": {
+        "ext-iconv": "*",
+        "symfony/console": "^5.4|^6.0",
+        "symfony/process": "^5.4|^6.0",
+        "symfony/uid": "^5.4|^6.0",
+        "twig/twig": "^2.13|^3.0.4"
+      },
+      "suggest": {
+        "ext-iconv": "To convert non-UTF-8 strings to UTF-8 (or symfony/polyfill-iconv in case ext-iconv cannot be used).",
                 "ext-intl": "To show region name in time zone dump",
                 "symfony/console": "To use the ServerDumpCommand and/or the bin/var-dump-server script"
             },
@@ -5865,16 +5865,16 @@
       "conflict": {
         "symfony/console": "<5.4"
       },
-            "require-dev": {
-                "symfony/console": "^5.4|^6.0"
-            },
-            "suggest": {
-                "symfony/console": "For validating YAML files using the lint command"
-            },
-            "bin": [
-                "Resources/bin/yaml-lint"
-            ],
-            "type": "library",
+      "require-dev": {
+        "symfony/console": "^5.4|^6.0"
+      },
+      "suggest": {
+        "symfony/console": "For validating YAML files using the lint command"
+      },
+      "bin": [
+        "Resources/bin/yaml-lint"
+      ],
+      "type": "library",
             "autoload": {
                 "psr-4": {
                     "Symfony\\Component\\Yaml\\": ""
@@ -6258,6 +6258,84 @@
         }
       ],
       "time": "2022-10-04T15:05:10+00:00"
+    },
+    {
+      "name": "symfony/web-profiler-bundle",
+      "version": "v6.1.6",
+      "source": {
+        "type": "git",
+        "url": "https://github.com/symfony/web-profiler-bundle.git",
+        "reference": "45d05cd8e967fd06bb1f66f748ed308c00674d32"
+      },
+      "dist": {
+        "type": "zip",
+        "url": "https://api.github.com/repos/symfony/web-profiler-bundle/zipball/45d05cd8e967fd06bb1f66f748ed308c00674d32",
+        "reference": "45d05cd8e967fd06bb1f66f748ed308c00674d32",
+        "shasum": ""
+      },
+      "require": {
+        "php": ">=8.1",
+        "symfony/config": "^5.4|^6.0",
+        "symfony/framework-bundle": "^5.4|^6.0",
+        "symfony/http-kernel": "^6.1",
+        "symfony/routing": "^5.4|^6.0",
+        "symfony/twig-bundle": "^5.4|^6.0",
+        "twig/twig": "^2.13|^3.0.4"
+      },
+      "conflict": {
+        "symfony/form": "<5.4",
+        "symfony/mailer": "<5.4",
+        "symfony/messenger": "<5.4"
+      },
+      "require-dev": {
+        "symfony/browser-kit": "^5.4|^6.0",
+        "symfony/console": "^5.4|^6.0",
+        "symfony/css-selector": "^5.4|^6.0",
+        "symfony/stopwatch": "^5.4|^6.0"
+      },
+      "type": "symfony-bundle",
+      "autoload": {
+        "psr-4": {
+          "Symfony\\Bundle\\WebProfilerBundle\\": ""
+        },
+        "exclude-from-classmap": [
+          "/Tests/"
+        ]
+      },
+      "notification-url": "https://packagist.org/downloads/",
+      "license": [
+        "MIT"
+      ],
+      "authors": [
+        {
+          "name": "Fabien Potencier",
+          "email": "fabien@symfony.com"
+        },
+        {
+          "name": "Symfony Community",
+          "homepage": "https://symfony.com/contributors"
+        }
+      ],
+      "description": "Provides a development tool that gives detailed information about the execution of any request",
+      "homepage": "https://symfony.com",
+      "support": {
+        "source": "https://github.com/symfony/web-profiler-bundle/tree/v6.1.6"
+      },
+      "funding": [
+        {
+          "url": "https://symfony.com/sponsor",
+          "type": "custom"
+        },
+        {
+          "url": "https://github.com/fabpot",
+          "type": "github"
+        },
+        {
+          "url": "https://tidelift.com/funding/github/packagist/symfony/symfony",
+          "type": "tidelift"
+        }
+      ],
+      "time": "2022-10-02T08:30:52+00:00"
     }
   ],
   "aliases": [],
