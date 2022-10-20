@@ -8,38 +8,56 @@ use ApiPlatform\Metadata\Post;
 use App\Repository\RegistrationRepository;
 use DateTimeImmutable;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Uid\Uuid;
 
 #[ORM\Entity(repositoryClass: RegistrationRepository::class)]
 #[ApiResource]
-#[Get]
-#[Post]
+#[Get(
+    uriTemplate: "/check/registration/{id}",
+    normalizationContext: [
+        "groups" => ["registration:read"]
+    ]
+)]
+#[Post(
+    uriTemplate: "/register",
+    denormalizationContext: [
+        "groups" => ["registration:write"]
+    ]
+)]
 class Registration
 {
     #[ORM\Id]
     #[ORM\Column(type: 'uuid', unique: true)]
     #[ORM\GeneratedValue(strategy: 'CUSTOM')]
     #[ORM\CustomIdGenerator(class: 'doctrine.uuid_generator')]
+    #[Groups(["registration:read"])]
     private ?Uuid $id = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups(["registration:read", "registration:write"])]
     private ?string $email = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups(["registration:write"])]
     private ?string $password = null;
 
     #[ORM\Column(type: 'uuid', unique: true)]
     #[ORM\GeneratedValue(strategy: 'CUSTOM')]
     #[ORM\CustomIdGenerator(class: 'doctrine.uuid_generator')]
+    #[Groups(["registration:read"])]
     private ?Uuid $code = null;
 
     #[ORM\Column]
+    #[Groups(["registration:read"])]
     private ?DateTimeImmutable $registeredAt = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups(["registration:read", "registration:write"])]
     private ?string $name = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups(["registration:read", "registration:write"])]
     private ?string $lastname = null;
 
     public function getId(): ?Uuid
