@@ -52,11 +52,11 @@ class Registration
     #[ORM\GeneratedValue(strategy: 'CUSTOM')]
     #[ORM\CustomIdGenerator(class: 'doctrine.uuid_generator')]
     #[Groups(["registration:read"])]
-    private ?Uuid $code = null;
+    private ?Uuid $code;
 
     #[ORM\Column]
     #[Groups(["registration:read"])]
-    private ?DateTimeImmutable $registeredAt = null;
+    private ?DateTimeImmutable $registeredAt;
 
     #[ORM\Column(length: 255)]
     #[Groups(["registration:read", "registration:write"])]
