@@ -24,11 +24,13 @@ use Symfony\Component\Uid\Uuid;
 )]
 #[Post(
     uriTemplate: "/register",
+    inputFormats: "json",
+    outputFormats: "json",
     normalizationContext: [
-        "groups" => ["registration:read"]
+        "groups" => ["registration:post:read"]
     ],
     denormalizationContext: [
-        "groups" => ["registration:write"]
+        "groups" => ["registration:post:write"]
     ]
 )]
 class Registration
@@ -41,11 +43,11 @@ class Registration
     private ?Uuid $id = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(["registration:read", "registration:write"])]
+    #[Groups(["registration:read", "registration:post:write", "registration:post:read"])]
     private ?string $email = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(["registration:write"])]
+    #[Groups(["registration:post:write"])]
     private ?string $password = null;
 
     #[ORM\Column(type: 'uuid', unique: true)]
@@ -59,11 +61,11 @@ class Registration
     private ?DateTimeImmutable $registeredAt;
 
     #[ORM\Column(length: 255)]
-    #[Groups(["registration:read", "registration:write"])]
+    #[Groups(["registration:read", "registration:post:write", "registration:post:read"])]
     private ?string $name = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(["registration:read", "registration:write"])]
+    #[Groups(["registration:read", "registration:post:write"])]
     private ?string $lastname = null;
 
     public function __construct()
