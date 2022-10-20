@@ -15,11 +15,12 @@ use Symfony\Component\Uid\Uuid;
 #[ApiResource]
 #[Get(
     uriTemplate: "/check/registration/{id}",
+    outputFormats: "json",
     normalizationContext: [
-        "groups" => ["registration:read"]
+        "groups" => ["registration:get:read"]
     ],
     denormalizationContext: [
-        "groups" => ["registration:write"]
+        "groups" => ["registration:get:write"]
     ]
 )]
 #[Post(
@@ -39,38 +40,29 @@ class Registration
     #[ORM\Column(type: 'uuid', unique: true)]
     #[ORM\GeneratedValue(strategy: 'CUSTOM')]
     #[ORM\CustomIdGenerator(class: 'doctrine.uuid_generator')]
-    #[Groups(["registration:read"])]
     private ?Uuid $id = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(["registration:read", "registration:post:write", "registration:post:read"])]
+    #[Groups(["registration:get:read", "registration:post:write", "registration:post:read"])]
     private ?string $email = null;
 
     #[ORM\Column(length: 255)]
     #[Groups(["registration:post:write"])]
     private ?string $password = null;
 
-    #[ORM\Column(type: 'uuid', unique: true)]
-    #[ORM\GeneratedValue(strategy: 'CUSTOM')]
-    #[ORM\CustomIdGenerator(class: 'doctrine.uuid_generator')]
-    #[Groups(["registration:read"])]
-    private ?Uuid $code;
-
     #[ORM\Column]
-    #[Groups(["registration:read"])]
     private ?DateTimeImmutable $registeredAt;
 
     #[ORM\Column(length: 255)]
-    #[Groups(["registration:read", "registration:post:write", "registration:post:read"])]
+    #[Groups(["registration:get:read", "registration:post:write", "registration:post:read"])]
     private ?string $name = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(["registration:read", "registration:post:write"])]
+    #[Groups(["registration:post:write"])]
     private ?string $lastname = null;
 
     public function __construct()
     {
-        $this->code = Uuid::v6();
         $this->registeredAt = new DateTimeImmutable();
     }
 
@@ -99,18 +91,6 @@ class Registration
     public function setPassword(string $password): self
     {
         $this->password = $password;
-
-        return $this;
-    }
-
-    public function getCode(): ?string
-    {
-        return $this->code;
-    }
-
-    public function setCode(Uuid $code): self
-    {
-        $this->code = $code;
 
         return $this;
     }
