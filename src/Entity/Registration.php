@@ -4,6 +4,7 @@ namespace App\Entity;
 
 use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\Get;
+use ApiPlatform\Metadata\Patch;
 use ApiPlatform\Metadata\Post;
 use App\Repository\RegistrationRepository;
 use DateTimeImmutable;
@@ -14,7 +15,7 @@ use Symfony\Component\Uid\Uuid;
 #[ORM\Entity(repositoryClass: RegistrationRepository::class)]
 #[ApiResource]
 #[Get(
-    uriTemplate: "/check/registration/{id}",
+    uriTemplate: "/registration/check/{id}",
     outputFormats: "json",
     normalizationContext: [
         "groups" => ["registration:get:read"]
@@ -32,6 +33,16 @@ use Symfony\Component\Uid\Uuid;
     ],
     denormalizationContext: [
         "groups" => ["registration:post:write"]
+    ]
+)]
+#[Patch(
+    uriTemplate: "/registration/activate/{id}",
+    outputFormats: "json",
+    normalizationContext: [
+        "groups" => ["registration:patch:read"]
+    ],
+    denormalizationContext: [
+        "groups" => ["registration:patch:write"]
     ]
 )]
 class Registration
@@ -62,7 +73,7 @@ class Registration
     private ?string $lastname = null;
 
     #[ORM\Column]
-    #[Groups(["registration:get:read"])]
+    #[Groups(["registration:get:read", "registration:patch:read"])]
     private ?bool $isActive = false;
 
     public function __construct()
