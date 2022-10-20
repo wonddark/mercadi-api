@@ -21,7 +21,7 @@ class Offer
     #[ORM\CustomIdGenerator(class: 'doctrine.uuid_generator')]
     private ?Uuid $id = null;
 
-    #[ORM\ManyToOne]
+    #[ORM\ManyToOne(inversedBy: "offers")]
     #[ORM\JoinColumn(nullable: false)]
     private ?User $user = null;
 
