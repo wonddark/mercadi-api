@@ -3,3 +3,8 @@ App\Entity\Registration:
     ApiPlatform\Metadata\Get: ~
     ApiPlatform\Metadata\Post:
       uriTemplate: "/register"
+App\Entity\User:
+  operations:
+    ApiPlatform\Metadata\Get: ~
+    ApiPlatform\Metadata\GetCollection: ~
+    ApiPlatform\Metadata\Patch: ~
