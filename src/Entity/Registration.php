@@ -17,10 +17,16 @@ use Symfony\Component\Uid\Uuid;
     uriTemplate: "/check/registration/{id}",
     normalizationContext: [
         "groups" => ["registration:read"]
+    ],
+    denormalizationContext: [
+        "groups" => ["registration:write"]
     ]
 )]
 #[Post(
     uriTemplate: "/register",
+    normalizationContext: [
+        "groups" => ["registration:read"]
+    ],
     denormalizationContext: [
         "groups" => ["registration:write"]
     ]
@@ -59,6 +65,12 @@ class Registration
     #[ORM\Column(length: 255)]
     #[Groups(["registration:read", "registration:write"])]
     private ?string $lastname = null;
+
+    public function __construct()
+    {
+        $this->code = Uuid::v6();
+        $this->registeredAt = new DateTimeImmutable();
+    }
 
     public function getId(): ?Uuid
     {
