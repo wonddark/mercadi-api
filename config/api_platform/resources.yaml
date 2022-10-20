@@ -1,0 +1,5 @@
+App\Entity\Registration:
+  operations:
+    ApiPlatform\Metadata\Get: ~
+    ApiPlatform\Metadata\Post:
+      uriTemplate: "/register"
