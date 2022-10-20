@@ -61,6 +61,10 @@ class Registration
     #[Groups(["registration:post:write"])]
     private ?string $lastname = null;
 
+    #[ORM\Column]
+    #[Groups(["registration:get:read"])]
+    private ?bool $isActive = false;
+
     public function __construct()
     {
         $this->registeredAt = new DateTimeImmutable();
@@ -127,6 +131,18 @@ class Registration
     public function setLastname(string $lastname): self
     {
         $this->lastname = $lastname;
+
+        return $this;
+    }
+
+    public function isIsActive(): ?bool
+    {
+        return $this->isActive;
+    }
+
+    public function setIsActive(bool $isActive): self
+    {
+        $this->isActive = $isActive;
 
         return $this;
     }
