@@ -1,3 +1,7 @@
 controllers:
     resource: ../src/Controller/
     type: attribute
+
+authenticate:
+    path: /authenticate
+    methods: ['POST']
