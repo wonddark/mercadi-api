@@ -14,21 +14,19 @@ class ActivateAccount implements ProcessorInterface
     private EntityManagerInterface $manager;
 
     public function __construct(
-        ProcessorInterface     $decorated,
+        ProcessorInterface $decorated,
         EntityManagerInterface $manager
-    )
-    {
+    ) {
         $this->decorated = $decorated;
         $this->manager = $manager;
     }
 
     public function process(
-        mixed     $data,
+        mixed $data,
         Operation $operation,
-        array     $uriVariables = [],
-        array     $context = []
-    )
-    {
+        array $uriVariables = [],
+        array $context = []
+    ) {
         if (!$data->isIsActive()) {
             $account = new Account();
             $account->setEmail($data->getEmail());
