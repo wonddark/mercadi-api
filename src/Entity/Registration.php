@@ -8,6 +8,7 @@ use ApiPlatform\Metadata\Patch;
 use ApiPlatform\Metadata\Post;
 use App\Repository\RegistrationRepository;
 use App\State\ActivateAccount;
+use App\State\CreateRegistration;
 use DateTimeImmutable;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups;
@@ -35,7 +36,8 @@ use Symfony\Component\Validator\Constraints as Assert;
     ],
     denormalizationContext: [
         "groups" => ["registration:post:write"]
-    ]
+    ],
+    processor: CreateRegistration::class
 )]
 #[Patch(
     uriTemplate: "/registration/activate/{id}",
@@ -56,7 +58,7 @@ class Registration
     #[ORM\CustomIdGenerator(class: 'doctrine.uuid_generator')]
     private ?Uuid $id = null;
 
-    #[ORM\Column(length: 255)]
+    #[ORM\Column(length: 255, unique: true)]
     #[Groups([
         "registration:get:read",
         "registration:post:write",

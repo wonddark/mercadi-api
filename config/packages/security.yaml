@@ -1,7 +1,7 @@
 security:
   # https://symfony.com/doc/current/security.html#registering-the-user-hashing-passwords
   password_hashers:
-    Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface: 'auto'
+    App\Entity\Account: 'auto'
   # https://symfony.com/doc/current/security.html#loading-the-user-the-user-provider
   providers:
     # used to reload user from session & other features (e.g. switch_user)
@@ -14,8 +14,15 @@ security:
       pattern: ^/(_(profiler|wdt)|css|images|js)/
       security: false
     main:
-      lazy: true
+      stateless: true
       provider: app_user_provider
+      json_login:
+        check_path: authenticate
+        username_path: email
+        password_path: password
+        success_handler: lexik_jwt_authentication.handler.authentication_success
+        failure_handler: lexik_jwt_authentication.handler.authentication_failure
+      jwt: ~
 
       # activate different ways to authenticate
       # https://symfony.com/doc/current/security.html#the-firewall
@@ -26,7 +33,11 @@ security:
   # Easy way to control access for large sections of your site
   # Note: Only the *first* access control that matches will be used
   access_control:
-  # - { path: ^/admin, roles: ROLE_ADMIN }
+   - { path: ^/$, roles: PUBLIC_ACCESS }
+   - { path: ^/(regist|login), roles: PUBLIC_ACCESS }
+   - { path: ^/offers, methods: [ GET ], roles: PUBLIC_ACCESS }
+   - { path: ^/bids, methods: [ GET ], roles: PUBLIC_ACCESS }
+   - { path: ^/, roles: IS_AUTHENTICATED_FULLY }
   # - { path: ^/profile, roles: ROLE_USER }
 
 when@test:
