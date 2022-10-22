@@ -11,10 +11,14 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use JetBrains\PhpStorm\Pure;
+use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Uid\Uuid;
 
 #[ORM\Entity(repositoryClass: UserRepository::class)]
-#[ApiResource]
+#[ApiResource(
+    normalizationContext: ["groups" => ["user:read"]],
+    denormalizationContext: ["groups" => ["user:write"]]
+)]
 #[Get]
 #[GetCollection]
 #[Patch]
@@ -24,22 +28,28 @@ class User
     #[ORM\Column(type: 'uuid', unique: true)]
     #[ORM\GeneratedValue(strategy: 'CUSTOM')]
     #[ORM\CustomIdGenerator(class: 'doctrine.uuid_generator')]
+    #[Groups(["user:read"])]
     private ?Uuid $id = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups(["user:read", "user:write"])]
     private ?string $name = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups(["user:read", "user:write"])]
     private ?string $lastname = null;
 
     #[ORM\OneToOne(cascade: ['persist', 'remove'])]
     #[ORM\JoinColumn(nullable: false)]
+    #[Groups(["user:read"])]
     private ?Account $account = null;
 
     #[ORM\OneToMany(mappedBy: 'user', targetEntity: Offer::class, orphanRemoval: true)]
+    #[Groups(["user:read"])]
     private Collection $offers;
 
     #[ORM\OneToMany(mappedBy: 'user', targetEntity: Bid::class, orphanRemoval: true)]
+    #[Groups(["user:read"])]
     private Collection $bids;
 
     #[Pure]
