@@ -7,6 +7,7 @@ use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\Patch;
 use ApiPlatform\Metadata\Post;
 use App\Repository\RegistrationRepository;
+use App\State\ActivateAccount;
 use DateTimeImmutable;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups;
@@ -43,7 +44,8 @@ use Symfony\Component\Uid\Uuid;
     ],
     denormalizationContext: [
         "groups" => ["registration:patch:write"]
-    ]
+    ],
+    processor: ActivateAccount::class
 )]
 class Registration
 {
