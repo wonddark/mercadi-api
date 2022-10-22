@@ -7,10 +7,12 @@ use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\Patch;
 use ApiPlatform\Metadata\Post;
 use App\Repository\RegistrationRepository;
+use App\State\ActivateAccount;
 use DateTimeImmutable;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Uid\Uuid;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: RegistrationRepository::class)]
 #[ApiResource]
@@ -43,7 +45,8 @@ use Symfony\Component\Uid\Uuid;
     ],
     denormalizationContext: [
         "groups" => ["registration:patch:write"]
-    ]
+    ],
+    processor: ActivateAccount::class
 )]
 class Registration
 {
@@ -54,22 +57,36 @@ class Registration
     private ?Uuid $id = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(["registration:get:read", "registration:post:write", "registration:post:read"])]
+    #[Groups([
+        "registration:get:read",
+        "registration:post:write",
+        "registration:post:read"
+    ])]
+    #[Assert\NotBlank]
+    #[Assert\Email]
     private ?string $email = null;
 
     #[ORM\Column(length: 255)]
     #[Groups(["registration:post:write"])]
+    #[Assert\NotBlank]
+    #[Assert\Length(min: 8, max: 16)]
     private ?string $password = null;
 
     #[ORM\Column]
     private ?DateTimeImmutable $registeredAt;
 
     #[ORM\Column(length: 255)]
-    #[Groups(["registration:get:read", "registration:post:write", "registration:post:read"])]
+    #[Groups([
+        "registration:get:read",
+        "registration:post:write",
+        "registration:post:read"
+    ])]
+    #[Assert\NotBlank]
     private ?string $name = null;
 
     #[ORM\Column(length: 255)]
     #[Groups(["registration:post:write"])]
+    #[Assert\NotBlank]
     private ?string $lastname = null;
 
     #[ORM\Column]
