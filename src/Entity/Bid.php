@@ -43,7 +43,7 @@ class Bid
     private ?DateTimeImmutable $publishedAt;
 
     #[ORM\Column]
-    private ?bool $isDeletable = null;
+    private ?bool $isDeletable = true;
 
     public function __construct()
     {
