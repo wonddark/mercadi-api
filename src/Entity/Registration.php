@@ -37,6 +37,7 @@ use Symfony\Component\Validator\Constraints as Assert;
     denormalizationContext: [
         "groups" => ["registration:post:write"]
     ],
+    validationContext: ['groups' => 'registration:post'],
     processor: CreateRegistration::class
 )]
 #[Patch(
@@ -71,7 +72,7 @@ class Registration
     #[ORM\Column(length: 255)]
     #[Groups(["registration:post:write"])]
     #[Assert\NotBlank]
-    #[Assert\Length(min: 8, max: 16)]
+    #[Assert\Length(min: 8, max: 16, groups: ['registration:post'])]
     private ?string $password = null;
 
     #[ORM\Column]
