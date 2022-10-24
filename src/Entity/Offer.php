@@ -37,9 +37,12 @@ use Symfony\Component\Uid\Uuid;
     ],
     denormalizationContext: [
         "groups" => ["offer:patch:write"]
-    ]
+    ],
+    security: "is_granted('object.user.id == user.id')"
 )]
-#[Delete]
+#[Delete(
+    security: "is_granted('object.user.id == user.id')"
+)]
 class Offer
 {
     #[ORM\Id]
