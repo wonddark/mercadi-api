@@ -6,9 +6,9 @@ use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\Delete;
 use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\GetCollection;
-use ApiPlatform\Metadata\Patch;
 use ApiPlatform\Metadata\Post;
 use App\Repository\BidRepository;
+use App\State\RetireBid;
 use DateTimeImmutable;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Uid\Uuid;
@@ -18,8 +18,9 @@ use Symfony\Component\Uid\Uuid;
 #[Get]
 #[GetCollection]
 #[Post]
-#[Patch]
-#[Delete]
+#[Delete(
+    processor: RetireBid::class
+)]
 class Bid
 {
     #[ORM\Id]
