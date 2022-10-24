@@ -21,7 +21,7 @@ class RetireBid implements ProcessorInterface
         array $uriVariables = [],
         array $context = []
     ): void {
-        if ($data->isIsDeleteable()) {
+        if ($data->isIsDeletable()) {
             $this->processor->process(
                 $data,
                 $operation,

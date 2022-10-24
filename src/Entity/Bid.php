@@ -104,7 +104,7 @@ class Bid
         return $this;
     }
 
-    public function isIsDeleteable(): ?bool
+    public function isIsDeletable(): ?bool
     {
         return $this->isDeletable;
     }
