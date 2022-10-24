@@ -67,7 +67,7 @@ class Offer
     private ?string $name = null;
 
     #[ORM\Column]
-    #[Groups(["offer:post:read", "offer:post:write", "offer:patch:read"])]
+    #[Groups(["offer:post:write"])]
     private ?float $initialBid = null;
 
     #[ORM\Column(length: 255)]
