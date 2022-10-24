@@ -31,7 +31,14 @@ use Symfony\Component\Uid\Uuid;
     ],
     processor: OfferCreator::class
 )]
-#[Patch]
+#[Patch(
+    normalizationContext: [
+        "groups" => ["offer:patch:read"]
+    ],
+    denormalizationContext: [
+        "groups" => ["offer:patch:write"]
+    ]
+)]
 #[Delete]
 class Offer
 {
@@ -39,36 +46,46 @@ class Offer
     #[ORM\Column(type: 'uuid', unique: true)]
     #[ORM\GeneratedValue(strategy: 'CUSTOM')]
     #[ORM\CustomIdGenerator(class: 'doctrine.uuid_generator')]
-    #[Groups(["offer:post:read"])]
+    #[Groups(["offer:post:read", "offer:patch:read"])]
     private ?Uuid $id = null;
 
     #[ORM\ManyToOne(inversedBy: "offers")]
     #[ORM\JoinColumn(nullable: false)]
-    #[Groups(["offer:post:read"])]
+    #[Groups(["offer:post:read", "offer:patch:read"])]
     private ?User $user = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(["offer:post:read", "offer:post:write"])]
+    #[Groups([
+        "offer:post:read",
+        "offer:post:write",
+        "offer:patch:read",
+        "offer:patch:write"
+    ])]
     private ?string $name = null;
 
     #[ORM\Column]
-    #[Groups(["offer:post:read", "offer:post:write"])]
+    #[Groups(["offer:post:read", "offer:post:write", "offer:patch:read"])]
     private ?float $initialBid = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(["offer:post:read", "offer:post:write"])]
+    #[Groups([
+        "offer:post:read",
+        "offer:post:write",
+        "offer:patch:read",
+        "offer:patch:write"
+    ])]
     private ?string $description = null;
 
     #[ORM\Column(type: Types::SIMPLE_ARRAY, nullable: true)]
-    #[Groups(["offer:post:read"])]
+    #[Groups(["offer:post:read", "offer:patch:read"])]
     private array $images = [];
 
     #[ORM\Column]
-    #[Groups(["offer:post:read"])]
-    private ?DateTimeImmutable $publishedAt = null;
+    #[Groups(["offer:post:read", "offer:patch:read"])]
+    private ?DateTimeImmutable $publishedAt;
 
     #[ORM\OneToMany(mappedBy: 'offer', targetEntity: Bid::class, orphanRemoval: true)]
-    #[Groups(["offer:post:read"])]
+    #[Groups(["offer:post:read", "offer:patch:read"])]
     private Collection $bids;
 
     public function __construct()
