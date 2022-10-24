@@ -36,7 +36,6 @@ security:
    - { path: ^/$, roles: PUBLIC_ACCESS }
    - { path: ^/(regist|login), roles: PUBLIC_ACCESS }
    - { path: ^/offers, methods: [ GET ], roles: PUBLIC_ACCESS }
-   - { path: ^/bids, methods: [ GET ], roles: PUBLIC_ACCESS }
    - { path: ^/, roles: IS_AUTHENTICATED_FULLY }
   # - { path: ^/profile, roles: ROLE_USER }
 
