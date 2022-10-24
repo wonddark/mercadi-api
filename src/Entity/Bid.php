@@ -40,10 +40,15 @@ class Bid
     private ?float $quantity = null;
 
     #[ORM\Column]
-    private ?DateTimeImmutable $publishedAt = null;
+    private ?DateTimeImmutable $publishedAt;
 
     #[ORM\Column]
     private ?bool $isDeletable = null;
+
+    public function __construct()
+    {
+        $this->publishedAt = new DateTimeImmutable();
+    }
 
     public function getId(): ?Uuid
     {
