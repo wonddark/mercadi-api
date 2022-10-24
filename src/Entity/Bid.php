@@ -42,6 +42,9 @@ class Bid
     #[ORM\Column]
     private ?DateTimeImmutable $publishedAt = null;
 
+    #[ORM\Column]
+    private ?bool $isDeletable = null;
+
     public function getId(): ?Uuid
     {
         return $this->id;
@@ -91,6 +94,18 @@ class Bid
     public function setPublishedAt(DateTimeImmutable $publishedAt): self
     {
         $this->publishedAt = $publishedAt;
+
+        return $this;
+    }
+
+    public function isIsDeleteable(): ?bool
+    {
+        return $this->isDeletable;
+    }
+
+    public function setIsDeletable(bool $isDeletable): self
+    {
+        $this->isDeletable = $isDeletable;
 
         return $this;
     }
