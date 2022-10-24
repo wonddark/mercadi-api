@@ -9,18 +9,28 @@ use ApiPlatform\Metadata\GetCollection;
 use ApiPlatform\Metadata\Patch;
 use ApiPlatform\Metadata\Post;
 use App\Repository\OfferRepository;
+use App\State\OfferCreator;
 use DateTimeImmutable;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Uid\Uuid;
 
 #[ORM\Entity(repositoryClass: OfferRepository::class)]
 #[ApiResource]
 #[Get]
 #[GetCollection]
-#[Post]
+#[Post(
+    normalizationContext: [
+        "groups" => ["offer:post:read"]
+    ],
+    denormalizationContext: [
+        "groups" => ["offer:post:write"]
+    ],
+    processor: OfferCreator::class
+)]
 #[Patch]
 #[Delete]
 class Offer
@@ -29,33 +39,42 @@ class Offer
     #[ORM\Column(type: 'uuid', unique: true)]
     #[ORM\GeneratedValue(strategy: 'CUSTOM')]
     #[ORM\CustomIdGenerator(class: 'doctrine.uuid_generator')]
+    #[Groups(["offer:post:read"])]
     private ?Uuid $id = null;
 
     #[ORM\ManyToOne(inversedBy: "offers")]
     #[ORM\JoinColumn(nullable: false)]
+    #[Groups(["offer:post:read"])]
     private ?User $user = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups(["offer:post:read", "offer:post:write"])]
     private ?string $name = null;
 
     #[ORM\Column]
+    #[Groups(["offer:post:read", "offer:post:write"])]
     private ?float $initialBid = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups(["offer:post:read", "offer:post:write"])]
     private ?string $description = null;
 
     #[ORM\Column(type: Types::SIMPLE_ARRAY, nullable: true)]
+    #[Groups(["offer:post:read"])]
     private array $images = [];
 
     #[ORM\Column]
+    #[Groups(["offer:post:read"])]
     private ?DateTimeImmutable $publishedAt = null;
 
     #[ORM\OneToMany(mappedBy: 'offer', targetEntity: Bid::class, orphanRemoval: true)]
+    #[Groups(["offer:post:read"])]
     private Collection $bids;
 
     public function __construct()
     {
         $this->bids = new ArrayCollection();
+        $this->publishedAt = new DateTimeImmutable();
     }
 
     public function getId(): ?Uuid
