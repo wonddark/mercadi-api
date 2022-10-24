@@ -4,8 +4,10 @@ namespace App\State;
 
 use ApiPlatform\Metadata\Operation;
 use ApiPlatform\State\ProcessorInterface;
+use App\Entity\Bid;
 use App\Entity\User;
 use Doctrine\ORM\EntityManager;
+use Exception;
 use Symfony\Component\Security\Core\Security;
 
 class OfferCreator implements ProcessorInterface
@@ -29,17 +31,24 @@ class OfferCreator implements ProcessorInterface
         Operation $operation,
         array $uriVariables = [],
         array $context = []
-    ) {
+    ): void {
         $user = $this
             ->entityManager
             ->getRepository(User::class)
             ->findOneBy(["account" => $this->security->getUser()]);
         $data->setUser($user);
-        return $this->processor->process(
-            $data,
-            $operation,
-            $uriVariables,
-            $context
-        );
+        $this->processor->process($data, $operation, $uriVariables, $context);
+        $bid = new Bid();
+        $bid->setOffer($data);
+        $bid->setUser($user);
+        $bid->setIsDeletable(false);
+        $bid->setQuantity($data->getInitialBid());
+        try {
+            $this->entityManager->persist($bid);
+            $this->entityManager->flush();
+        } catch (Exception $exception) {
+            echo "Error\n";
+            var_dump($exception);
+        }
     }
 }
