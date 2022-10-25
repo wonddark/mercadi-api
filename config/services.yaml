@@ -38,6 +38,11 @@ services:
     bind:
       $processor: '@api_platform.doctrine.orm.state.persist_processor'
 
+  App\State\WhoAmI:
+    bind:
+      $security: '@security.helper'
+      $entityManager: '@doctrine.orm.default_entity_manager'
+
   App\OpenApi\JwtDecorator:
     decorates: 'api_platform.openapi.factory'
     arguments: [ '@.inner' ]

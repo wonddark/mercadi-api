@@ -7,6 +7,7 @@ use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\GetCollection;
 use ApiPlatform\Metadata\Patch;
 use App\Repository\UserRepository;
+use App\State\WhoAmI;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
@@ -20,6 +21,11 @@ use Symfony\Component\Uid\Uuid;
     denormalizationContext: ["groups" => ["user:write"]]
 )]
 #[Get]
+#[Get(
+    uriTemplate: "/me",
+    outputFormats: ["json"],
+    provider: WhoAmI::class
+)]
 #[GetCollection]
 #[Patch]
 class User
