@@ -34,11 +34,24 @@ class User
     #[ORM\Column(type: 'uuid', unique: true)]
     #[ORM\GeneratedValue(strategy: 'CUSTOM')]
     #[ORM\CustomIdGenerator(class: 'doctrine.uuid_generator')]
-    #[Groups(["user:read"])]
+    #[Groups([
+        "user:read",
+        "offer:general:read",
+        "offer:post:read",
+        "offer:patch:read",
+        "bid:general:read"
+    ])]
     private ?Uuid $id = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(["user:read", "user:write"])]
+    #[Groups([
+        "user:read",
+        "user:write",
+        "offer:general:read",
+        "offer:post:read",
+        "offer:patch:read",
+        "bid:general:read"
+    ])]
     private ?string $name = null;
 
     #[ORM\Column(length: 255)]
@@ -50,11 +63,19 @@ class User
     #[Groups(["user:read"])]
     private ?Account $account = null;
 
-    #[ORM\OneToMany(mappedBy: 'user', targetEntity: Offer::class, orphanRemoval: true)]
+    #[ORM\OneToMany(
+        mappedBy: 'user',
+        targetEntity: Offer::class,
+        orphanRemoval: true
+    )]
     #[Groups(["user:read"])]
     private Collection $offers;
 
-    #[ORM\OneToMany(mappedBy: 'user', targetEntity: Bid::class, orphanRemoval: true)]
+    #[ORM\OneToMany(
+        mappedBy: 'user',
+        targetEntity: Bid::class,
+        orphanRemoval: true
+    )]
     #[Groups(["user:read"])]
     private Collection $bids;
 

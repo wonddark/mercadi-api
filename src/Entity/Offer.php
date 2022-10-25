@@ -6,6 +6,7 @@ use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\Delete;
 use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\GetCollection;
+use ApiPlatform\Metadata\Link;
 use ApiPlatform\Metadata\Patch;
 use ApiPlatform\Metadata\Post;
 use App\Repository\OfferRepository;
@@ -21,9 +22,20 @@ use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Uid\Uuid;
 
 #[ORM\Entity(repositoryClass: OfferRepository::class)]
-#[ApiResource]
+#[ApiResource(
+    normalizationContext: [
+        "groups" => ["offer:general:read"]
+    ],
+    order: ["publishedAt" => 'DESC']
+)]
 #[Get]
 #[GetCollection]
+#[GetCollection(
+    uriTemplate: "/user/{id}/offers",
+    uriVariables: [
+        "id" => new Link(fromClass: User::class, fromProperty: "offers")
+    ]
+)]
 #[Post(
     normalizationContext: [
         "groups" => ["offer:post:read"]
@@ -52,12 +64,21 @@ class Offer
     #[ORM\Column(type: 'uuid', unique: true)]
     #[ORM\GeneratedValue(strategy: 'CUSTOM')]
     #[ORM\CustomIdGenerator(class: 'doctrine.uuid_generator')]
-    #[Groups(["offer:post:read", "offer:patch:read"])]
+    #[Groups([
+        "offer:post:read",
+        "offer:patch:read",
+        "offer:general:read",
+        "bid:general:read"
+    ])]
     private ?Uuid $id = null;
 
     #[ORM\ManyToOne(inversedBy: "offers")]
     #[ORM\JoinColumn(nullable: false)]
-    #[Groups(["offer:post:read", "offer:patch:read"])]
+    #[Groups([
+        "offer:post:read",
+        "offer:patch:read",
+        "offer:general:read"
+    ])]
     private ?User $user = null;
 
     #[ORM\Column(length: 255)]
@@ -65,7 +86,9 @@ class Offer
         "offer:post:read",
         "offer:post:write",
         "offer:patch:read",
-        "offer:patch:write"
+        "offer:patch:write",
+        "offer:general:read",
+        "bid:general:read"
     ])]
     private ?string $name = null;
 
@@ -78,24 +101,45 @@ class Offer
         "offer:post:read",
         "offer:post:write",
         "offer:patch:read",
-        "offer:patch:write"
+        "offer:patch:write",
+        "offer:general:read"
     ])]
     private ?string $description = null;
 
     #[ORM\Column(type: Types::SIMPLE_ARRAY, nullable: true)]
-    #[Groups(["offer:post:read", "offer:patch:read"])]
+    #[Groups([
+        "offer:post:read",
+        "offer:patch:read",
+        "offer:general:read"
+    ])]
     private array $images = [];
 
     #[ORM\Column]
-    #[Groups(["offer:post:read", "offer:patch:read"])]
+    #[Groups([
+        "offer:post:read",
+        "offer:patch:read",
+        "offer:general:read"
+    ])]
     private ?DateTimeImmutable $publishedAt;
 
-    #[ORM\OneToMany(mappedBy: 'offer', targetEntity: Bid::class, orphanRemoval: true)]
-    #[Groups(["offer:post:read", "offer:patch:read"])]
+    #[ORM\OneToMany(
+        mappedBy: 'offer',
+        targetEntity: Bid::class,
+        orphanRemoval: true
+    )]
+    #[Groups([
+        "offer:post:read",
+        "offer:patch:read",
+        "offer:general:read"
+    ])]
     private Collection $bids;
 
     #[ORM\Column]
-    #[Groups(["offer:post:read", "offer:patch:read"])]
+    #[Groups([
+        "offer:post:read",
+        "offer:patch:read",
+        "offer:general:read"
+    ])]
     private ?bool $isOpen = true;
 
     public function __construct()
