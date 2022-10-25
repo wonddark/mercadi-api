@@ -6,6 +6,7 @@ use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\Delete;
 use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\GetCollection;
+use ApiPlatform\Metadata\Link;
 use ApiPlatform\Metadata\Post;
 use App\Repository\BidRepository;
 use App\State\RetireBid;
@@ -22,6 +23,12 @@ use Symfony\Component\Uid\Uuid;
 )]
 #[Get]
 #[GetCollection]
+#[GetCollection(
+    uriTemplate: "/user/{id}/bids",
+    uriVariables: [
+        "id" => new Link(fromClass: User::class, fromProperty: "bids")
+    ]
+)]
 #[Post(
     normalizationContext: [
         "groups" => ["bid:post:read"]
