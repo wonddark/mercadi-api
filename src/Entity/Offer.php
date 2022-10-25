@@ -25,7 +25,8 @@ use Symfony\Component\Uid\Uuid;
 #[ApiResource(
     normalizationContext: [
         "groups" => ["offer:general:read"]
-    ]
+    ],
+    order: ["publishedAt" => 'DESC']
 )]
 #[Get]
 #[GetCollection]
