@@ -15,10 +15,21 @@ use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Uid\Uuid;
 
 #[ORM\Entity(repositoryClass: BidRepository::class)]
-#[ApiResource]
+#[ApiResource(
+    normalizationContext: [
+        "groups" => ["bid:general:read"]
+    ]
+)]
 #[Get]
 #[GetCollection]
-#[Post]
+#[Post(
+    normalizationContext: [
+        "groups" => ["bid:post:read"]
+    ],
+    denormalizationContext: [
+        "groups" => ["bid:post:write"]
+    ]
+)]
 #[Delete(
     processor: RetireBid::class
 )]
@@ -28,27 +39,34 @@ class Bid
     #[ORM\Column(type: 'uuid', unique: true)]
     #[ORM\GeneratedValue(strategy: 'CUSTOM')]
     #[ORM\CustomIdGenerator(class: 'doctrine.uuid_generator')]
-    #[Groups(["offer:general:read"])]
+    #[Groups(["offer:general:read", "bid:post:read", "bid:general:read"])]
     private ?Uuid $id = null;
 
     #[ORM\ManyToOne(inversedBy: 'bids')]
     #[ORM\JoinColumn(nullable: false)]
-    #[Groups(["offer:general:read"])]
+    #[Groups(["offer:general:read", "bid:post:read", "bid:general:read"])]
     private ?User $user = null;
 
     #[ORM\ManyToOne(inversedBy: 'bids')]
     #[ORM\JoinColumn(nullable: false)]
+    #[Groups(["bid:post:write", "bid:post:read", "bid:general:read"])]
     private ?Offer $offer = null;
 
     #[ORM\Column]
-    #[Groups(["offer:general:read"])]
+    #[Groups([
+        "offer:general:read",
+        "bid:post:write",
+        "bid:post:read",
+        "bid:general:read"
+    ])]
     private ?float $quantity = null;
 
     #[ORM\Column]
-    #[Groups(["offer:general:read"])]
+    #[Groups(["offer:general:read", "bid:post:read", "bid:general:read"])]
     private ?DateTimeImmutable $publishedAt;
 
     #[ORM\Column]
+    #[Groups(["bid:post:read", "bid:general:read"])]
     private ?bool $isDeletable = true;
 
     public function __construct()

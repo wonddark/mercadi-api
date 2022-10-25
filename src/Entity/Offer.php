@@ -67,7 +67,8 @@ class Offer
     #[Groups([
         "offer:post:read",
         "offer:patch:read",
-        "offer:general:read"
+        "offer:general:read",
+        "bid:general:read"
     ])]
     private ?Uuid $id = null;
 
@@ -86,7 +87,8 @@ class Offer
         "offer:post:write",
         "offer:patch:read",
         "offer:patch:write",
-        "offer:general:read"
+        "offer:general:read",
+        "bid:general:read"
     ])]
     private ?string $name = null;
 

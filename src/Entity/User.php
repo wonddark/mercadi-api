@@ -38,7 +38,8 @@ class User
         "user:read",
         "offer:general:read",
         "offer:post:read",
-        "offer:patch:read"
+        "offer:patch:read",
+        "bid:general:read"
     ])]
     private ?Uuid $id = null;
 
@@ -48,7 +49,8 @@ class User
         "user:write",
         "offer:general:read",
         "offer:post:read",
-        "offer:patch:read"
+        "offer:patch:read",
+        "bid:general:read"
     ])]
     private ?string $name = null;
 
