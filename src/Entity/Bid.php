@@ -19,7 +19,8 @@ use Symfony\Component\Uid\Uuid;
 #[ApiResource(
     normalizationContext: [
         "groups" => ["bid:general:read"]
-    ]
+    ],
+    order: ["publishedAt" => "DESC"]
 )]
 #[Get]
 #[GetCollection]
@@ -27,6 +28,12 @@ use Symfony\Component\Uid\Uuid;
     uriTemplate: "/user/{id}/bids",
     uriVariables: [
         "id" => new Link(fromClass: User::class, fromProperty: "bids")
+    ]
+)]
+#[GetCollection(
+    uriTemplate: "/offer/{id}/bids",
+    uriVariables: [
+        "id" => new Link(fromClass: Offer::class, fromProperty: "bids")
     ]
 )]
 #[Post(
