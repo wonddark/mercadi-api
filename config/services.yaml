@@ -38,6 +38,10 @@ services:
     bind:
       $processor: '@api_platform.doctrine.orm.state.persist_processor'
 
+  App\State\CloseOffer:
+    bind:
+      $entityManager: '@doctrine.orm.default_entity_manager'
+
   App\State\WhoAmI:
     bind:
       $security: '@security.helper'

@@ -9,6 +9,8 @@ use ApiPlatform\Metadata\GetCollection;
 use ApiPlatform\Metadata\Patch;
 use ApiPlatform\Metadata\Post;
 use App\Repository\OfferRepository;
+use App\Security\Voter\OfferOwnershipVoter;
+use App\State\CloseOffer;
 use App\State\OfferCreator;
 use DateTimeImmutable;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -38,10 +40,11 @@ use Symfony\Component\Uid\Uuid;
     denormalizationContext: [
         "groups" => ["offer:patch:write"]
     ],
-    security: "is_granted('object.user.id == user.id')"
+    security: "is_granted('" . OfferOwnershipVoter::EDIT . "', object)"
 )]
 #[Delete(
-    security: "is_granted('object.user.id == user.id')"
+    security: "is_granted('" . OfferOwnershipVoter::DELETE . "', object)",
+    processor: CloseOffer::class
 )]
 class Offer
 {
@@ -90,6 +93,10 @@ class Offer
     #[ORM\OneToMany(mappedBy: 'offer', targetEntity: Bid::class, orphanRemoval: true)]
     #[Groups(["offer:post:read", "offer:patch:read"])]
     private Collection $bids;
+
+    #[ORM\Column]
+    #[Groups(["offer:post:read", "offer:patch:read"])]
+    private ?bool $isOpen = true;
 
     public function __construct()
     {
@@ -200,6 +207,18 @@ class Offer
                 $bid->setOffer(null);
             }
         }
+
+        return $this;
+    }
+
+    public function isIsOpen(): ?bool
+    {
+        return $this->isOpen;
+    }
+
+    public function setIsOpen(bool $isOpen): self
+    {
+        $this->isOpen = $isOpen;
 
         return $this;
     }
