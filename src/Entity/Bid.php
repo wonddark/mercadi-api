@@ -9,6 +9,7 @@ use ApiPlatform\Metadata\GetCollection;
 use ApiPlatform\Metadata\Link;
 use ApiPlatform\Metadata\Post;
 use App\Repository\BidRepository;
+use App\State\BidCreator;
 use App\State\RetireBid;
 use DateTimeImmutable;
 use Doctrine\ORM\Mapping as ORM;
@@ -42,7 +43,8 @@ use Symfony\Component\Uid\Uuid;
     ],
     denormalizationContext: [
         "groups" => ["bid:post:write"]
-    ]
+    ],
+    processor: BidCreator::class
 )]
 #[Delete(
     processor: RetireBid::class
