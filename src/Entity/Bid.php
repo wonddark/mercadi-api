@@ -11,6 +11,7 @@ use App\Repository\BidRepository;
 use App\State\RetireBid;
 use DateTimeImmutable;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Uid\Uuid;
 
 #[ORM\Entity(repositoryClass: BidRepository::class)]
@@ -27,10 +28,12 @@ class Bid
     #[ORM\Column(type: 'uuid', unique: true)]
     #[ORM\GeneratedValue(strategy: 'CUSTOM')]
     #[ORM\CustomIdGenerator(class: 'doctrine.uuid_generator')]
+    #[Groups(["offer:general:read"])]
     private ?Uuid $id = null;
 
     #[ORM\ManyToOne(inversedBy: 'bids')]
     #[ORM\JoinColumn(nullable: false)]
+    #[Groups(["offer:general:read"])]
     private ?User $user = null;
 
     #[ORM\ManyToOne(inversedBy: 'bids')]
@@ -38,9 +41,11 @@ class Bid
     private ?Offer $offer = null;
 
     #[ORM\Column]
+    #[Groups(["offer:general:read"])]
     private ?float $quantity = null;
 
     #[ORM\Column]
+    #[Groups(["offer:general:read"])]
     private ?DateTimeImmutable $publishedAt;
 
     #[ORM\Column]
