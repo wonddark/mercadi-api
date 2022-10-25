@@ -6,6 +6,7 @@ use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\Delete;
 use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\GetCollection;
+use ApiPlatform\Metadata\Link;
 use ApiPlatform\Metadata\Patch;
 use ApiPlatform\Metadata\Post;
 use App\Repository\OfferRepository;
@@ -24,6 +25,12 @@ use Symfony\Component\Uid\Uuid;
 #[ApiResource]
 #[Get]
 #[GetCollection]
+#[GetCollection(
+    uriTemplate: "/user/{id}/offers",
+    uriVariables: [
+        "id" => new Link(fromClass: User::class, fromProperty: "offers")
+    ]
+)]
 #[Post(
     normalizationContext: [
         "groups" => ["offer:post:read"]
