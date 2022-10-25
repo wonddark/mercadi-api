@@ -28,6 +28,25 @@ services:
     bind:
       $decorated: '@api_platform.doctrine.orm.state.persist_processor'
 
+  App\State\OfferCreator:
+    bind:
+      $processor: '@api_platform.doctrine.orm.state.persist_processor'
+      $security: '@security.helper'
+      $entityManager: '@doctrine.orm.default_entity_manager'
+
+  App\State\RetireBid:
+    bind:
+      $processor: '@api_platform.doctrine.orm.state.persist_processor'
+
+  App\State\CloseOffer:
+    bind:
+      $entityManager: '@doctrine.orm.default_entity_manager'
+
+  App\State\WhoAmI:
+    bind:
+      $security: '@security.helper'
+      $entityManager: '@doctrine.orm.default_entity_manager'
+
   App\OpenApi\JwtDecorator:
     decorates: 'api_platform.openapi.factory'
     arguments: [ '@.inner' ]

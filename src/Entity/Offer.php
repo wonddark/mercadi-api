@@ -9,53 +9,99 @@ use ApiPlatform\Metadata\GetCollection;
 use ApiPlatform\Metadata\Patch;
 use ApiPlatform\Metadata\Post;
 use App\Repository\OfferRepository;
+use App\Security\Voter\OfferOwnershipVoter;
+use App\State\CloseOffer;
+use App\State\OfferCreator;
 use DateTimeImmutable;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Uid\Uuid;
 
 #[ORM\Entity(repositoryClass: OfferRepository::class)]
 #[ApiResource]
 #[Get]
 #[GetCollection]
-#[Post]
-#[Patch]
-#[Delete]
+#[Post(
+    normalizationContext: [
+        "groups" => ["offer:post:read"]
+    ],
+    denormalizationContext: [
+        "groups" => ["offer:post:write"]
+    ],
+    processor: OfferCreator::class
+)]
+#[Patch(
+    normalizationContext: [
+        "groups" => ["offer:patch:read"]
+    ],
+    denormalizationContext: [
+        "groups" => ["offer:patch:write"]
+    ],
+    security: "is_granted('" . OfferOwnershipVoter::EDIT . "', object)"
+)]
+#[Delete(
+    security: "is_granted('" . OfferOwnershipVoter::DELETE . "', object)",
+    processor: CloseOffer::class
+)]
 class Offer
 {
     #[ORM\Id]
     #[ORM\Column(type: 'uuid', unique: true)]
     #[ORM\GeneratedValue(strategy: 'CUSTOM')]
     #[ORM\CustomIdGenerator(class: 'doctrine.uuid_generator')]
+    #[Groups(["offer:post:read", "offer:patch:read"])]
     private ?Uuid $id = null;
 
     #[ORM\ManyToOne(inversedBy: "offers")]
     #[ORM\JoinColumn(nullable: false)]
+    #[Groups(["offer:post:read", "offer:patch:read"])]
     private ?User $user = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups([
+        "offer:post:read",
+        "offer:post:write",
+        "offer:patch:read",
+        "offer:patch:write"
+    ])]
     private ?string $name = null;
 
     #[ORM\Column]
+    #[Groups(["offer:post:write"])]
     private ?float $initialBid = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups([
+        "offer:post:read",
+        "offer:post:write",
+        "offer:patch:read",
+        "offer:patch:write"
+    ])]
     private ?string $description = null;
 
     #[ORM\Column(type: Types::SIMPLE_ARRAY, nullable: true)]
+    #[Groups(["offer:post:read", "offer:patch:read"])]
     private array $images = [];
 
     #[ORM\Column]
-    private ?DateTimeImmutable $publishedAt = null;
+    #[Groups(["offer:post:read", "offer:patch:read"])]
+    private ?DateTimeImmutable $publishedAt;
 
     #[ORM\OneToMany(mappedBy: 'offer', targetEntity: Bid::class, orphanRemoval: true)]
+    #[Groups(["offer:post:read", "offer:patch:read"])]
     private Collection $bids;
+
+    #[ORM\Column]
+    #[Groups(["offer:post:read", "offer:patch:read"])]
+    private ?bool $isOpen = true;
 
     public function __construct()
     {
         $this->bids = new ArrayCollection();
+        $this->publishedAt = new DateTimeImmutable();
     }
 
     public function getId(): ?Uuid
@@ -161,6 +207,18 @@ class Offer
                 $bid->setOffer(null);
             }
         }
+
+        return $this;
+    }
+
+    public function isIsOpen(): ?bool
+    {
+        return $this->isOpen;
+    }
+
+    public function setIsOpen(bool $isOpen): self
+    {
+        $this->isOpen = $isOpen;
 
         return $this;
     }

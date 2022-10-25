@@ -6,9 +6,9 @@ use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\Delete;
 use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\GetCollection;
-use ApiPlatform\Metadata\Patch;
 use ApiPlatform\Metadata\Post;
 use App\Repository\BidRepository;
+use App\State\RetireBid;
 use DateTimeImmutable;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Uid\Uuid;
@@ -18,8 +18,9 @@ use Symfony\Component\Uid\Uuid;
 #[Get]
 #[GetCollection]
 #[Post]
-#[Patch]
-#[Delete]
+#[Delete(
+    processor: RetireBid::class
+)]
 class Bid
 {
     #[ORM\Id]
@@ -40,7 +41,15 @@ class Bid
     private ?float $quantity = null;
 
     #[ORM\Column]
-    private ?DateTimeImmutable $publishedAt = null;
+    private ?DateTimeImmutable $publishedAt;
+
+    #[ORM\Column]
+    private ?bool $isDeletable = true;
+
+    public function __construct()
+    {
+        $this->publishedAt = new DateTimeImmutable();
+    }
 
     public function getId(): ?Uuid
     {
@@ -91,6 +100,18 @@ class Bid
     public function setPublishedAt(DateTimeImmutable $publishedAt): self
     {
         $this->publishedAt = $publishedAt;
+
+        return $this;
+    }
+
+    public function isIsDeletable(): ?bool
+    {
+        return $this->isDeletable;
+    }
+
+    public function setIsDeletable(bool $isDeletable): self
+    {
+        $this->isDeletable = $isDeletable;
 
         return $this;
     }
