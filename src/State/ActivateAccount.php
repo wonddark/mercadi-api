@@ -27,18 +27,18 @@ class ActivateAccount implements ProcessorInterface
         array $uriVariables = [],
         array $context = []
     ) {
-        if (!$data->isIsActive()) {
+        if (!$data->isActive()) {
             $account = new Account();
             $account->setEmail($data->getEmail());
             $account->setPassword($data->getPassword());
             $user = new User();
             $user->setAccount($account);
-            $user->setName($data->getName());
-            $user->setLastname($data->getLastName());
+            $user->setName("");
+            $user->setLastname("");
             $this->manager->persist($account);
             $this->manager->persist($user);
             $this->manager->flush();
-            $data->setIsActive(true);
+            $data->setActive(true);
         }
         return $this->decorated->process(
             $data,
