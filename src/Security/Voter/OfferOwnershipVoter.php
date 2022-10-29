@@ -35,7 +35,7 @@ class OfferOwnershipVoter extends Voter
         return match ($attribute) {
             self::EDIT =>
                 $this->security->isGranted("ROLE_ADMIN") ||
-                $subject->getUser()->etAccount()->getId() == $user->getId(),
+                $subject->getUser()->getAccount()->getId() == $user->getId(),
             self::DELETE =>
                 $subject->getUser()->getAccount()->getId() == $user->getId(),
             default => false,
