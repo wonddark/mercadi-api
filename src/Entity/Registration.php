@@ -78,23 +78,9 @@ class Registration
     #[ORM\Column]
     private ?DateTimeImmutable $registeredAt;
 
-    #[ORM\Column(length: 255)]
-    #[Groups([
-        "registration:get:read",
-        "registration:post:write",
-        "registration:post:read"
-    ])]
-    #[Assert\NotBlank]
-    private ?string $name = null;
-
-    #[ORM\Column(length: 255)]
-    #[Groups(["registration:post:write"])]
-    #[Assert\NotBlank]
-    private ?string $lastname = null;
-
     #[ORM\Column]
     #[Groups(["registration:get:read", "registration:patch:read"])]
-    private ?bool $isActive = false;
+    private ?bool $active = false;
 
     public function __construct()
     {
@@ -142,38 +128,14 @@ class Registration
         return $this;
     }
 
-    public function getName(): ?string
+    public function isActive(): ?bool
     {
-        return $this->name;
+        return $this->active;
     }
 
-    public function setName(string $name): self
+    public function setActive(bool $isActive): self
     {
-        $this->name = $name;
-
-        return $this;
-    }
-
-    public function getLastname(): ?string
-    {
-        return $this->lastname;
-    }
-
-    public function setLastname(string $lastname): self
-    {
-        $this->lastname = $lastname;
-
-        return $this;
-    }
-
-    public function isIsActive(): ?bool
-    {
-        return $this->isActive;
-    }
-
-    public function setIsActive(bool $isActive): self
-    {
-        $this->isActive = $isActive;
+        $this->active = $isActive;
 
         return $this;
     }
