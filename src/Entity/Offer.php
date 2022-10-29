@@ -140,7 +140,7 @@ class Offer
         "offer:patch:read",
         "offer:general:read"
     ])]
-    private ?bool $isOpen = true;
+    private ?bool $open = true;
 
     public function __construct()
     {
@@ -255,14 +255,14 @@ class Offer
         return $this;
     }
 
-    public function isIsOpen(): ?bool
+    public function isOpen(): ?bool
     {
-        return $this->isOpen;
+        return $this->open;
     }
 
-    public function setIsOpen(bool $isOpen): self
+    public function setOpen(bool $open): self
     {
-        $this->isOpen = $isOpen;
+        $this->open = $open;
 
         return $this;
     }
