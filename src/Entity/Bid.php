@@ -83,7 +83,7 @@ class Bid
 
     #[ORM\Column]
     #[Groups(["bid:post:read", "bid:general:read"])]
-    private ?bool $isDeletable = true;
+    private ?bool $deletable = true;
 
     public function __construct()
     {
@@ -143,14 +143,14 @@ class Bid
         return $this;
     }
 
-    public function isIsDeletable(): ?bool
+    public function isDeletable(): ?bool
     {
-        return $this->isDeletable;
+        return $this->deletable;
     }
 
-    public function setIsDeletable(bool $isDeletable): self
+    public function setDeletable(bool $deletable): self
     {
-        $this->isDeletable = $isDeletable;
+        $this->deletable = $deletable;
 
         return $this;
     }
