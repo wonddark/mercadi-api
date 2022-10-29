@@ -24,7 +24,6 @@ use Symfony\Component\Uid\Uuid;
     order: ["publishedAt" => "DESC"]
 )]
 #[Get]
-#[GetCollection]
 #[GetCollection(
     uriTemplate: "/user/{id}/bids",
     uriVariables: [
