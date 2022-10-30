@@ -9,6 +9,7 @@ use ApiPlatform\Metadata\Post;
 use App\Repository\RegistrationRepository;
 use App\State\ActivateAccount;
 use App\State\CreateRegistration;
+use App\State\TestRegistrationEmail;
 use DateTimeImmutable;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups;
@@ -26,6 +27,14 @@ use Symfony\Component\Validator\Constraints as Assert;
     denormalizationContext: [
         "groups" => ["registration:get:write"]
     ]
+)]
+#[Get(
+    uriTemplate: "/registration/test/{email}",
+    uriVariables: [
+        "email" => ""
+    ],
+    description: "Tests if there is a registration with the given email",
+    provider: TestRegistrationEmail::class
 )]
 #[Post(
     uriTemplate: "/register",
