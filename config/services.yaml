@@ -48,6 +48,10 @@ services:
     bind:
       $entityManager: '@doctrine.orm.default_entity_manager'
 
+  App\State\TestRegistrationEmail:
+    bind:
+      $entityManager: '@doctrine.orm.default_entity_manager'
+
   App\State\WhoAmI:
     bind:
       $security: '@security.helper'

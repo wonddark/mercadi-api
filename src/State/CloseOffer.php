@@ -24,15 +24,15 @@ class CloseOffer implements ProcessorInterface
         array $uriVariables = [],
         array $context = []
     ): void {
-        if ($data->isIsOpen()) {
-            $data->setIsOpen(false);
+        if ($data->isOpen()) {
+            $data->setOpen(false);
             $bids = $this
                 ->entityManager
                 ->getRepository(Bid::class)
                 ->findBy(["offer" => $data]);
             try {
                 foreach ($bids as $bid) {
-                    $bid->setIsDeletable(false);
+                    $bid->setDeletable(false);
                     $this->entityManager->persist($bid);
                 }
                 $this->entityManager->persist($data);
