@@ -19,6 +19,7 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Uid\Uuid;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: OfferRepository::class)]
 #[ApiResource(
@@ -81,6 +82,7 @@ class Offer
     private ?User $user = null;
 
     #[ORM\Column(length: 255)]
+    #[Assert\NotBlank]
     #[Groups([
         "offer:post:read",
         "offer:post:write",
@@ -92,10 +94,14 @@ class Offer
     private ?string $name = null;
 
     #[ORM\Column]
+    #[Assert\GreaterThan(49)]
+    #[Assert\LessThan(1_000_001)]
     #[Groups(["offer:post:write"])]
     private ?float $initialBid = null;
 
     #[ORM\Column(length: 255)]
+    #[Assert\NotBlank]
+    #[Assert\Length(min: 70)]
     #[Groups([
         "offer:post:read",
         "offer:post:write",
