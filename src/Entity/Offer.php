@@ -16,7 +16,6 @@ use App\State\OfferCreator;
 use DateTimeImmutable;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
-use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Uid\Uuid;
@@ -106,14 +105,6 @@ class Offer
     ])]
     private ?string $description = null;
 
-    #[ORM\Column(type: Types::SIMPLE_ARRAY, nullable: true)]
-    #[Groups([
-        "offer:post:read",
-        "offer:patch:read",
-        "offer:general:read"
-    ])]
-    private array $images = [];
-
     #[ORM\Column]
     #[Groups([
         "offer:post:read",
@@ -142,10 +133,19 @@ class Offer
     ])]
     private ?bool $open = true;
 
+    #[ORM\OneToMany(mappedBy: 'offer', targetEntity: MediaObject::class, orphanRemoval: true)]
+    #[Groups([
+        "offer:post:read",
+        "offer:patch:read",
+        "offer:general:read"
+    ])]
+    private Collection $medias;
+
     public function __construct()
     {
         $this->bids = new ArrayCollection();
         $this->publishedAt = new DateTimeImmutable();
+        $this->medias = new ArrayCollection();
     }
 
     public function getId(): ?Uuid
@@ -201,18 +201,6 @@ class Offer
         return $this;
     }
 
-    public function getImages(): array
-    {
-        return $this->images;
-    }
-
-    public function setImages(?array $images): self
-    {
-        $this->images = $images;
-
-        return $this;
-    }
-
     public function getPublishedAt(): ?DateTimeImmutable
     {
         return $this->publishedAt;
@@ -263,6 +251,36 @@ class Offer
     public function setOpen(bool $open): self
     {
         $this->open = $open;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, MediaObject>
+     */
+    public function getMedias(): Collection
+    {
+        return $this->medias;
+    }
+
+    public function addMedia(MediaObject $media): self
+    {
+        if (!$this->medias->contains($media)) {
+            $this->medias->add($media);
+            $media->setOffer($this);
+        }
+
+        return $this;
+    }
+
+    public function removeMedia(MediaObject $media): self
+    {
+        if ($this->medias->removeElement($media)) {
+            // set the owning side to null (unless already changed)
+            if ($media->getOffer() === $this) {
+                $media->setOffer(null);
+            }
+        }
 
         return $this;
     }
