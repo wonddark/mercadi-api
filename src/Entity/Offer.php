@@ -16,10 +16,10 @@ use App\State\OfferCreator;
 use DateTimeImmutable;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
-use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Uid\Uuid;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: OfferRepository::class)]
 #[ApiResource(
@@ -82,6 +82,7 @@ class Offer
     private ?User $user = null;
 
     #[ORM\Column(length: 255)]
+    #[Assert\NotBlank]
     #[Groups([
         "offer:post:read",
         "offer:post:write",
@@ -93,10 +94,14 @@ class Offer
     private ?string $name = null;
 
     #[ORM\Column]
+    #[Assert\GreaterThan(49)]
+    #[Assert\LessThan(1_000_001)]
     #[Groups(["offer:post:write"])]
     private ?float $initialBid = null;
 
     #[ORM\Column(length: 255)]
+    #[Assert\NotBlank]
+    #[Assert\Length(min: 70)]
     #[Groups([
         "offer:post:read",
         "offer:post:write",
@@ -105,14 +110,6 @@ class Offer
         "offer:general:read"
     ])]
     private ?string $description = null;
-
-    #[ORM\Column(type: Types::SIMPLE_ARRAY, nullable: true)]
-    #[Groups([
-        "offer:post:read",
-        "offer:patch:read",
-        "offer:general:read"
-    ])]
-    private array $images = [];
 
     #[ORM\Column]
     #[Groups([
@@ -142,10 +139,19 @@ class Offer
     ])]
     private ?bool $open = true;
 
+    #[ORM\OneToMany(mappedBy: 'offer', targetEntity: MediaObject::class, orphanRemoval: true)]
+    #[Groups([
+        "offer:post:read",
+        "offer:patch:read",
+        "offer:general:read"
+    ])]
+    private Collection $medias;
+
     public function __construct()
     {
         $this->bids = new ArrayCollection();
         $this->publishedAt = new DateTimeImmutable();
+        $this->medias = new ArrayCollection();
     }
 
     public function getId(): ?Uuid
@@ -201,18 +207,6 @@ class Offer
         return $this;
     }
 
-    public function getImages(): array
-    {
-        return $this->images;
-    }
-
-    public function setImages(?array $images): self
-    {
-        $this->images = $images;
-
-        return $this;
-    }
-
     public function getPublishedAt(): ?DateTimeImmutable
     {
         return $this->publishedAt;
@@ -263,6 +257,36 @@ class Offer
     public function setOpen(bool $open): self
     {
         $this->open = $open;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, MediaObject>
+     */
+    public function getMedias(): Collection
+    {
+        return $this->medias;
+    }
+
+    public function addMedia(MediaObject $media): self
+    {
+        if (!$this->medias->contains($media)) {
+            $this->medias->add($media);
+            $media->setOffer($this);
+        }
+
+        return $this;
+    }
+
+    public function removeMedia(MediaObject $media): self
+    {
+        if ($this->medias->removeElement($media)) {
+            // set the owning side to null (unless already changed)
+            if ($media->getOffer() === $this) {
+                $media->setOffer(null);
+            }
+        }
 
         return $this;
     }
