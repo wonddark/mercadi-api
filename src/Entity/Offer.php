@@ -26,7 +26,7 @@ use Symfony\Component\Validator\Constraints as Assert;
     normalizationContext: [
         "groups" => ["offer:general:read"]
     ],
-    order: ["publishedAt" => 'DESC'],
+    order: ["publishedAt" => 'DESC', "bids.publishedAt" => "DESC"],
     paginationClientItemsPerPage: true
 )]
 #[Get]
