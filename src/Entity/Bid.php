@@ -10,6 +10,7 @@ use ApiPlatform\Metadata\Link;
 use ApiPlatform\Metadata\Post;
 use App\Repository\BidRepository;
 use App\State\BidCreator;
+use App\State\GetHighestBidPerOffer;
 use App\State\RetireBid;
 use DateTimeImmutable;
 use Doctrine\ORM\Mapping as ORM;
@@ -24,6 +25,13 @@ use Symfony\Component\Uid\Uuid;
     order: ["publishedAt" => "DESC"]
 )]
 #[Get]
+#[Get(
+    uriTemplate: "/offer/{id}/bids/highest",
+    normalizationContext: [
+        "groups" => ["bid:get:highest:read"]
+    ],
+    provider: GetHighestBidPerOffer::class,
+)]
 #[GetCollection(
     uriTemplate: "/user/{id}/bids",
     uriVariables: [
@@ -54,12 +62,12 @@ class Bid
     #[ORM\Column(type: 'uuid', unique: true)]
     #[ORM\GeneratedValue(strategy: 'CUSTOM')]
     #[ORM\CustomIdGenerator(class: 'doctrine.uuid_generator')]
-    #[Groups(["offer:general:read", "bid:post:read", "bid:general:read"])]
+    #[Groups(["offer:general:read", "bid:post:read", "bid:general:read", "bid:get:highest:read"])]
     private ?Uuid $id = null;
 
     #[ORM\ManyToOne(inversedBy: 'bids')]
     #[ORM\JoinColumn(nullable: false)]
-    #[Groups(["offer:general:read", "bid:post:read", "bid:general:read"])]
+    #[Groups(["offer:general:read", "bid:post:read", "bid:general:read", "bid:get:highest:read"])]
     private ?User $user = null;
 
     #[ORM\ManyToOne(inversedBy: 'bids')]
@@ -72,12 +80,13 @@ class Bid
         "offer:general:read",
         "bid:post:write",
         "bid:post:read",
-        "bid:general:read"
+        "bid:general:read",
+        "bid:get:highest:read"
     ])]
     private ?float $quantity = null;
 
     #[ORM\Column]
-    #[Groups(["offer:general:read", "bid:post:read", "bid:general:read"])]
+    #[Groups(["offer:general:read", "bid:post:read", "bid:general:read", "bid:get:highest:read"])]
     private ?DateTimeImmutable $publishedAt;
 
     #[ORM\Column]
