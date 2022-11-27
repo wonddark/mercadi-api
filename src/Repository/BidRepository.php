@@ -4,6 +4,7 @@ namespace App\Repository;
 
 use App\Entity\Bid;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\ORM\NonUniqueResultException;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
@@ -37,5 +38,20 @@ class BidRepository extends ServiceEntityRepository
         if ($flush) {
             $this->getEntityManager()->flush();
         }
+    }
+
+    /**
+     * @throws NonUniqueResultException
+     */
+    public function getHighestPerOffer(string $offerId)
+    {
+        $query = $this->createQueryBuilder('b')
+            ->innerJoin("b.offer", "o")
+            ->where("o.id = :offer_id")
+            ->setParameter("offer_id", $offerId, "uuid")
+            ->orderBy("b.quantity", "DESC")
+            ->setMaxResults(1);
+
+        return $query->getQuery()->getOneOrNullResult();
     }
 }
