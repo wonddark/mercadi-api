@@ -11,7 +11,6 @@ use Symfony\Component\HttpKernel\Exception\UnprocessableEntityHttpException;
 class RetireBid implements ProcessorInterface
 {
     public function __construct(
-        private readonly ProcessorInterface $processor,
         private readonly EntityManagerInterface $manager
     ) {
     }
