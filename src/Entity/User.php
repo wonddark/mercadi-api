@@ -39,7 +39,8 @@ class User
         "offer:general:read",
         "offer:post:read",
         "offer:patch:read",
-        "bid:general:read"
+        "bid:general:read",
+        "bid:get:highest:read"
     ])]
     private ?Uuid $id = null;
 
@@ -50,12 +51,13 @@ class User
         "offer:general:read",
         "offer:post:read",
         "offer:patch:read",
-        "bid:general:read"
+        "bid:general:read",
+        "bid:get:highest:read"
     ])]
     private ?string $name = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(["user:read", "user:write"])]
+    #[Groups(["user:read", "user:write", "bid:get:highest:read"])]
     private ?string $lastname = null;
 
     #[ORM\OneToOne(cascade: ['persist', 'remove'])]
