@@ -149,7 +149,7 @@ class Offer
     private Collection $medias;
 
     #[ORM\OneToOne(cascade: ['persist', 'remove'])]
-    #[ORM\JoinColumn(nullable: false)]
+    #[ORM\JoinColumn(nullable: true)]
     #[Groups([
         "offer:post:read",
         "offer:patch:read",
