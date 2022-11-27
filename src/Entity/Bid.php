@@ -22,7 +22,8 @@ use Symfony\Component\Uid\Uuid;
     normalizationContext: [
         "groups" => ["bid:general:read"]
     ],
-    order: ["publishedAt" => "DESC"]
+    order: ["publishedAt" => "DESC"],
+    paginationClientItemsPerPage: true
 )]
 #[Get]
 #[Get(
