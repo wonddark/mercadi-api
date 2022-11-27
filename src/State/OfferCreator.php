@@ -43,6 +43,7 @@ class OfferCreator implements ProcessorInterface
         $bid->setUser($user);
         $bid->setDeletable(false);
         $bid->setQuantity($data->getInitialBid());
+        $data->setHighestBid($bid);
         try {
             $this->entityManager->persist($bid);
             $this->entityManager->flush();

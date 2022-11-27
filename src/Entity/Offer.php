@@ -148,6 +148,15 @@ class Offer
     ])]
     private Collection $medias;
 
+    #[ORM\OneToOne(cascade: ['persist', 'remove'])]
+    #[ORM\JoinColumn(nullable: false)]
+    #[Groups([
+        "offer:post:read",
+        "offer:patch:read",
+        "offer:general:read"
+    ])]
+    private ?Bid $highestBid = null;
+
     public function __construct()
     {
         $this->bids = new ArrayCollection();
@@ -288,6 +297,18 @@ class Offer
                 $media->setOffer(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getHighestBid(): ?Bid
+    {
+        return $this->highestBid;
+    }
+
+    public function setHighestBid(Bid $highestBid): self
+    {
+        $this->highestBid = $highestBid;
 
         return $this;
     }

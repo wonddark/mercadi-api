@@ -50,6 +50,7 @@ class BidCreator implements ProcessorInterface
                 );
             }
             $data->setUser($user);
+            $offer->setHighestBid($data);
             $this->processor->process(
                 $data,
                 $operation,
