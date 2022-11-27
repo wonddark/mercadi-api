@@ -26,25 +26,24 @@ class BidCreator implements ProcessorInterface
         array $uriVariables = [],
         array $context = []
     ): void {
-        $lastBid = $this
+        $highestBid = $this
             ->entityManager
             ->getRepository(Bid::class)
-            ->findBy([
-                "offer" => $data->getOffer()
-            ], orderBy: [
-                "publishedAt" => "DESC"
-            ])[0];
-        if ($data->getQuantity() > $lastBid->getQuantity()) {
+            ->getHighestPerOffer($data->getOffer()->getId());
+
+        if ($data->getQuantity() >= $highestBid->getQuantity()) {
             $user = $this
                 ->entityManager
                 ->getRepository(User::class)
                 ->findOneBy([
                     "account" => $this->security->getUser()
                 ]);
+
             $offer = $this
                 ->entityManager
                 ->getRepository(Offer::class)
                 ->find($data->getOffer()->getId());
+
             if ($user === $offer->getUser()) {
                 throw new UnprocessableEntityHttpException(
                     "We don't allow users to make bid to its own offers"
@@ -59,7 +58,7 @@ class BidCreator implements ProcessorInterface
             );
         } else {
             throw new UnprocessableEntityHttpException(
-                "Bid's quantity must be greater than the higher active bid"
+                "Bid's quantity must be greater than or equal to the higher active bid"
             );
         }
     }
