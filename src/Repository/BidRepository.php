@@ -54,4 +54,18 @@ class BidRepository extends ServiceEntityRepository
 
         return $query->getQuery()->getOneOrNullResult();
     }
+
+    public function getUserBids(string $userId): array|int|string
+    {
+        $query = $this->createQueryBuilder("b")
+            ->innerJoin("b.user", "user")
+            ->innerJoin("b.offer", "o")
+            ->innerJoin("o.user", "u")
+            ->addSelect("o")
+            ->where("user.id = :userId")
+            ->andWhere("u.id != :userId")
+            ->setParameter("userId", $userId, "uuid");
+
+        return $query->getQuery()->getArrayResult();
+    }
 }
