@@ -11,6 +11,7 @@ use ApiPlatform\Metadata\Post;
 use App\Repository\BidRepository;
 use App\State\BidCreator;
 use App\State\GetHighestBidPerOffer;
+use App\State\GetUserBids;
 use App\State\RetireBid;
 use DateTimeImmutable;
 use Doctrine\ORM\Mapping as ORM;
@@ -37,7 +38,8 @@ use Symfony\Component\Uid\Uuid;
     uriTemplate: "/user/{id}/bids",
     uriVariables: [
         "id" => new Link(fromClass: User::class, fromProperty: "bids")
-    ]
+    ],
+    provider: GetUserBids::class
 )]
 #[GetCollection(
     uriTemplate: "/offer/{id}/bids",
