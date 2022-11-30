@@ -4,15 +4,15 @@ namespace App\State;
 
 use ApiPlatform\Metadata\Operation;
 use ApiPlatform\State\ProcessorInterface;
+use App\Entity\Bid;
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpKernel\Exception\UnprocessableEntityHttpException;
 
 class RetireBid implements ProcessorInterface
 {
-    private ProcessorInterface $processor;
-
-    public function __construct(ProcessorInterface $processor)
-    {
-        $this->processor = $processor;
+    public function __construct(
+        private readonly EntityManagerInterface $manager
+    ) {
     }
 
     public function process(
@@ -22,12 +22,8 @@ class RetireBid implements ProcessorInterface
         array $context = []
     ): void {
         if ($data->isDeletable()) {
-            $this->processor->process(
-                $data,
-                $operation,
-                $uriVariables,
-                $context
-            );
+            $this->manager->getRepository(Bid::class)->remove($data);
+            $this->manager->flush();
         } else {
             throw new UnprocessableEntityHttpException("Bid is not deletable");
         }

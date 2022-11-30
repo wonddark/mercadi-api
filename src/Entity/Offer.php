@@ -26,7 +26,7 @@ use Symfony\Component\Validator\Constraints as Assert;
     normalizationContext: [
         "groups" => ["offer:general:read"]
     ],
-    order: ["publishedAt" => 'DESC'],
+    order: ["publishedAt" => 'DESC', "bids.publishedAt" => "DESC"],
     paginationClientItemsPerPage: true
 )]
 #[Get]
@@ -149,7 +149,7 @@ class Offer
     private Collection $medias;
 
     #[ORM\OneToOne(cascade: ['persist', 'remove'])]
-    #[ORM\JoinColumn(nullable: false)]
+    #[ORM\JoinColumn(nullable: true)]
     #[Groups([
         "offer:post:read",
         "offer:patch:read",
