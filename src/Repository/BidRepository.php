@@ -2,9 +2,13 @@
 
 namespace App\Repository;
 
+use ApiPlatform\Doctrine\Orm\Paginator;
 use App\Entity\Bid;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\Common\Collections\Criteria;
 use Doctrine\ORM\NonUniqueResultException;
+use Doctrine\ORM\Query\QueryException;
+use Doctrine\ORM\Tools\Pagination\Paginator as DoctrinePaginator;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
@@ -55,8 +59,12 @@ class BidRepository extends ServiceEntityRepository
         return $query->getQuery()->getOneOrNullResult();
     }
 
-    public function getUserBids(string $userId): array|int|string
+    /**
+     * @throws QueryException
+     */
+    public function getUserBids(string $userId, int $page, int $itemsPerPage): Paginator
     {
+        $firstResult = ($page - 1) * $itemsPerPage;
         $query = $this->createQueryBuilder("b")
             ->innerJoin("b.user", "user")
             ->innerJoin("b.offer", "o")
@@ -66,6 +74,13 @@ class BidRepository extends ServiceEntityRepository
             ->andWhere("u.id != :userId")
             ->setParameter("userId", $userId, "uuid");
 
-        return $query->getQuery()->getArrayResult();
+        $criteria = Criteria::create()
+            ->setFirstResult($firstResult)
+            ->setMaxResults($itemsPerPage);
+        $query->addCriteria($criteria);
+
+        $doctrinePaginator = new DoctrinePaginator($query);
+
+        return new Paginator($doctrinePaginator);
     }
 }
