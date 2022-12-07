@@ -2,6 +2,8 @@
 
 namespace App\Entity;
 
+use ApiPlatform\Doctrine\Orm\Filter\BooleanFilter;
+use ApiPlatform\Metadata\ApiFilter;
 use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\Delete;
 use ApiPlatform\Metadata\Get;
@@ -59,6 +61,7 @@ use Symfony\Component\Validator\Constraints as Assert;
     security: "is_granted('" . OfferOwnershipVoter::DELETE . "', object)",
     processor: CloseOffer::class
 )]
+#[ApiFilter(BooleanFilter::class, properties: ["open"])]
 class Offer
 {
     #[ORM\Id]
