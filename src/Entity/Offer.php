@@ -139,7 +139,8 @@ class Offer
     #[Groups([
         "offer:post:read",
         "offer:patch:read",
-        "offer:general:read"
+        "offer:general:read",
+        "bid:general:read"
     ])]
     private ?bool $open = true;
 
