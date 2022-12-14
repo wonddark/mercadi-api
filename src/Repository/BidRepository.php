@@ -62,7 +62,7 @@ class BidRepository extends ServiceEntityRepository
     /**
      * @throws QueryException
      */
-    public function getUserBids(string $userId, int $page, int $itemsPerPage): Paginator
+    public function getUserBids(string $userId, int $page, int $itemsPerPage, bool $openStatus = null): Paginator
     {
         $firstResult = ($page - 1) * $itemsPerPage;
         $query = $this->createQueryBuilder("b")
@@ -73,6 +73,12 @@ class BidRepository extends ServiceEntityRepository
             ->where("user.id = :userId")
             ->andWhere("u.id != :userId")
             ->setParameter("userId", $userId, "uuid");
+
+        if ($openStatus !== null) {
+            $query
+                ->andWhere("o.open = :openStatus")
+                ->setParameter("openStatus", $openStatus);
+        }
 
         $criteria = Criteria::create()
             ->setFirstResult($firstResult)
