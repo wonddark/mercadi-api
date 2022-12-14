@@ -37,7 +37,10 @@ use Symfony\Component\Uid\Uuid;
 #[GetCollection(
     uriTemplate: "/user/{id}/bids",
     uriVariables: [
-        "id" => new Link(fromClass: User::class, fromProperty: "bids")
+        "id" => new Link(fromClass: User::class, fromProperty: "bids"),
+    ],
+    filters: [
+        "offer.open_filter"
     ],
     provider: GetUserBids::class
 )]
