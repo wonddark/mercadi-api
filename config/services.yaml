@@ -48,3 +48,8 @@ services:
   App\OpenApi\JwtDecorator:
     decorates: 'api_platform.openapi.factory'
     arguments: [ '@.inner' ]
+
+  offer.open_filter:
+    parent: 'api_platform.doctrine.orm.boolean_filter'
+    arguments: [ { offer.open: ~ } ]
+    tags: [ 'api_platform.filter' ]
