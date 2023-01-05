@@ -3,6 +3,7 @@
 namespace App\Entity;
 
 use ApiPlatform\Doctrine\Orm\Filter\BooleanFilter;
+use ApiPlatform\Doctrine\Orm\Filter\SearchFilter;
 use ApiPlatform\Metadata\ApiFilter;
 use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\Delete;
@@ -62,6 +63,7 @@ use Symfony\Component\Validator\Constraints as Assert;
     processor: CloseOffer::class
 )]
 #[ApiFilter(BooleanFilter::class, properties: ["open"])]
+#[ApiFilter(SearchFilter::class, properties: ["name" => 'partial', "description" => 'partial'])]
 class Offer
 {
     #[ORM\Id]
