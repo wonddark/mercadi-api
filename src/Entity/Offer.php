@@ -15,6 +15,7 @@ use ApiPlatform\Metadata\Post;
 use App\Repository\OfferRepository;
 use App\Security\Voter\OfferOwnershipVoter;
 use App\State\CloseOffer;
+use App\State\GetOfferFiltered;
 use App\State\OfferCreator;
 use DateTimeImmutable;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -33,11 +34,11 @@ use Symfony\Component\Validator\Constraints as Assert;
     paginationClientItemsPerPage: true
 )]
 #[Get]
-#[GetCollection]
+#[GetCollection(provider: GetOfferFiltered::class)]
 #[GetCollection(
     uriTemplate: "/user/{id}/offers",
     uriVariables: [
-        "id" => new Link(fromClass: User::class, fromProperty: "offers")
+        "id" => new Link(fromProperty: "offers", fromClass: User::class)
     ]
 )]
 #[Post(
