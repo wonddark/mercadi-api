@@ -14,7 +14,7 @@ class GetOfferFiltered implements ProviderInterface
     }
     public function provide(Operation $operation, array $uriVariables = [], array $context = []): object|array|null
     {
-        $pattern = $context["filters"]["name"] ?: "";
+        $pattern = array_key_exists("query", $context["filters"]) ? $context["filters"]["query"] : "";
         $itemsPerPage = (int)$context["filters"]["itemsPerPage"] ?: 30;
         $page = (int)$context["filters"]["page"] ?: 1;
         return $this
