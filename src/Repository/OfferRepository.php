@@ -52,7 +52,8 @@ class OfferRepository extends ServiceEntityRepository
         $query = $this->createQueryBuilder('o')
             ->orWhere("o.name LIKE :pattern")
             ->orWhere("o.description LIKE :pattern")
-            ->setParameter("pattern", "%$pattern%");
+            ->setParameter("pattern", "%$pattern%")
+            ->orderBy('o.publishedAt', 'DESC');
 
         $criteria = Criteria::create()
             ->setFirstResult($firstResult)
