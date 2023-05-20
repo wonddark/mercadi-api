@@ -1,4 +1,4 @@
-# API for the auction house "Subastia"
+# API for the auction house "Stocked"
 
 > Built with  [Symfony](https://symfony.com/)/[API Platform](https://api-platform.com/)
 

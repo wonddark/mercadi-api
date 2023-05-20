@@ -1,7 +1,7 @@
 api_platform:
-  title: 'Subastia API'
+  title: 'Stocked API'
   version: '0.0.0'
-  description: 'API for Subastia application'
+  description: 'API for Stocked application'
   swagger:
     api_keys:
       JWT:

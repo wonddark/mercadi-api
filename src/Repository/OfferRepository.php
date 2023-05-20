@@ -2,8 +2,12 @@
 
 namespace App\Repository;
 
+use ApiPlatform\Doctrine\Orm\Paginator;
 use App\Entity\Offer;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\Common\Collections\Criteria;
+use Doctrine\ORM\Query\QueryException;
+use Doctrine\ORM\Tools\Pagination\Paginator as DoctrinePaginator;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
@@ -37,5 +41,27 @@ class OfferRepository extends ServiceEntityRepository
         if ($flush) {
             $this->getEntityManager()->flush();
         }
+    }
+
+    /**
+     * @throws QueryException
+     */
+    public function searchByNameOrDescription(string $pattern, int $page, int $itemsPerPage): Paginator
+    {
+        $firstResult = ($page - 1) * $itemsPerPage;
+        $query = $this->createQueryBuilder('o')
+            ->orWhere("o.name LIKE :pattern")
+            ->orWhere("o.description LIKE :pattern")
+            ->setParameter("pattern", "%$pattern%")
+            ->orderBy('o.publishedAt', 'DESC');
+
+        $criteria = Criteria::create()
+            ->setFirstResult($firstResult)
+            ->setMaxResults($itemsPerPage);
+        $query->addCriteria($criteria);
+
+        $doctrinePaginator = new DoctrinePaginator($query);
+
+        return new Paginator($doctrinePaginator);
     }
 }
