@@ -145,11 +145,13 @@ class Bid
         return $this;
     }
 
+    /** @noinspection PhpUnused */
     public function getPublishedAt(): ?DateTimeImmutable
     {
         return $this->publishedAt;
     }
 
+    /** @noinspection PhpUnused */
     public function setPublishedAt(DateTimeImmutable $publishedAt): self
     {
         $this->publishedAt = $publishedAt;
@@ -157,6 +159,7 @@ class Bid
         return $this;
     }
 
+    /** @noinspection PhpUnused */
     public function isDeletable(): ?bool
     {
         return $this->deletable;

@@ -6,6 +6,7 @@ use ApiPlatform\Metadata\Operation;
 use ApiPlatform\State\ProviderInterface;
 use App\Entity\Registration;
 use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\Exception\NotSupported;
 
 class TestRegistrationEmail implements ProviderInterface
 {
@@ -13,6 +14,9 @@ class TestRegistrationEmail implements ProviderInterface
     {
     }
 
+    /**
+     * @throws NotSupported
+     */
     public function provide(Operation $operation, array $uriVariables = [], array $context = []): object|array|null
     {
         $test = $this->entityManager->getRepository(Registration::class)

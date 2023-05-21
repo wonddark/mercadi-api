@@ -200,11 +200,13 @@ class Item
         return $this;
     }
 
+    /** @noinspection PhpUnused */
     public function getInitialBid(): ?float
     {
         return $this->initialBid;
     }
 
+    /** @noinspection PhpUnused */
     public function setInitialBid(float $initialBid): self
     {
         $this->initialBid = $initialBid;
@@ -224,11 +226,13 @@ class Item
         return $this;
     }
 
+    /** @noinspection PhpUnused */
     public function getPublishedAt(): ?DateTimeImmutable
     {
         return $this->publishedAt;
     }
 
+    /** @noinspection PhpUnused */
     public function setPublishedAt(DateTimeImmutable $publishedAt): self
     {
         $this->publishedAt = $publishedAt;
@@ -244,6 +248,7 @@ class Item
         return $this->bids;
     }
 
+    /** @noinspection PhpUnused */
     public function addBid(Bid $bid): self
     {
         if (!$this->bids->contains($bid)) {
@@ -254,6 +259,7 @@ class Item
         return $this;
     }
 
+    /** @noinspection PhpUnused */
     public function removeBid(Bid $bid): self
     {
         if ($this->bids->removeElement($bid)) {
@@ -266,11 +272,13 @@ class Item
         return $this;
     }
 
+    /** @noinspection PhpUnused */
     public function isOpen(): ?bool
     {
         return $this->open;
     }
 
+    /** @noinspection PhpUnused */
     public function setOpen(bool $open): self
     {
         $this->open = $open;
@@ -280,12 +288,14 @@ class Item
 
     /**
      * @return Collection<int, MediaObject>
+     * @noinspection PhpUnused
      */
     public function getMedias(): Collection
     {
         return $this->medias;
     }
 
+    /** @noinspection PhpUnused */
     public function addMedia(MediaObject $media): self
     {
         if (!$this->medias->contains($media)) {
@@ -296,6 +306,7 @@ class Item
         return $this;
     }
 
+    /** @noinspection PhpUnused */
     public function removeMedia(MediaObject $media): self
     {
         if ($this->medias->removeElement($media)) {

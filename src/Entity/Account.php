@@ -37,6 +37,7 @@ class Account implements UserInterface, PasswordAuthenticatedUserInterface
         return $this->id;
     }
 
+    /** @noinspection PhpUnused */
     public function getEmail(): ?string
     {
         return $this->email;
@@ -71,6 +72,7 @@ class Account implements UserInterface, PasswordAuthenticatedUserInterface
         return array_unique($roles);
     }
 
+    /** @noinspection PhpUnused */
     public function setRoles(array $roles): self
     {
         $this->roles = $roles;
