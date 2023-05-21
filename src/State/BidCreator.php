@@ -5,9 +5,10 @@ namespace App\State;
 use ApiPlatform\Metadata\Operation;
 use ApiPlatform\State\ProcessorInterface;
 use App\Entity\Bid;
-use App\Entity\Offer;
+use App\Entity\Item;
 use App\Entity\User;
 use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\Exception\NotSupported;
 use Symfony\Component\HttpKernel\Exception\UnprocessableEntityHttpException;
 use Symfony\Component\Security\Core\Security;
 
@@ -20,7 +21,11 @@ class BidCreator implements ProcessorInterface
     ) {
     }
 
+    /**
+     * @throws NotSupported
+     */
     public function process(
+        /* @var Bid $data */
         mixed $data,
         Operation $operation,
         array $uriVariables = [],
@@ -29,7 +34,7 @@ class BidCreator implements ProcessorInterface
         $highestBid = $this
             ->entityManager
             ->getRepository(Bid::class)
-            ->getHighestPerOffer($data->getOffer()->getId());
+            ->getHighestPerItem($data->getItem()->getId());
 
         if ($data->getQuantity() >= $highestBid->getQuantity()) {
             $user = $this
@@ -41,8 +46,8 @@ class BidCreator implements ProcessorInterface
 
             $offer = $this
                 ->entityManager
-                ->getRepository(Offer::class)
-                ->find($data->getOffer()->getId());
+                ->getRepository(Item::class)
+                ->find($data->getItem()->getId());
 
             if ($user === $offer->getUser()) {
                 throw new UnprocessableEntityHttpException(

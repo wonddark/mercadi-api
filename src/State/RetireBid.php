@@ -5,7 +5,7 @@ namespace App\State;
 use ApiPlatform\Metadata\Operation;
 use ApiPlatform\State\ProcessorInterface;
 use App\Entity\Bid;
-use App\Entity\Offer;
+use App\Entity\Item;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpKernel\Exception\UnprocessableEntityHttpException;
 
@@ -23,7 +23,7 @@ class RetireBid implements ProcessorInterface
         array $context = []
     ): void {
         if ($data->isDeletable()) {
-            /** @var Offer $offer */
+            /** @var Item $offer */
             $offer = $data->getOffer();
             if ($offer->getHighestBid()->getId() === $data->getId()) {
                 $index = $offer->getBids()->indexOf($offer->getHighestBid());

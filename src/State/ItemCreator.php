@@ -7,10 +7,11 @@ use ApiPlatform\State\ProcessorInterface;
 use App\Entity\Bid;
 use App\Entity\User;
 use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\Exception\NotSupported;
 use Exception;
-use Symfony\Component\Security\Core\Security;
+use Symfony\Bundle\SecurityBundle\Security;
 
-class OfferCreator implements ProcessorInterface
+class ItemCreator implements ProcessorInterface
 {
     private ProcessorInterface $processor;
     private Security $security;
@@ -26,12 +27,17 @@ class OfferCreator implements ProcessorInterface
         $this->entityManager = $entityManager;
     }
 
+    /**
+     * @throws NotSupported
+     * @throws Exception
+     */
     public function process(
         mixed $data,
         Operation $operation,
         array $uriVariables = [],
         array $context = []
     ): void {
+        /* @var User $user */
         $user = $this
             ->entityManager
             ->getRepository(User::class)
@@ -39,7 +45,7 @@ class OfferCreator implements ProcessorInterface
         $data->setUser($user);
         $this->processor->process($data, $operation, $uriVariables, $context);
         $bid = new Bid();
-        $bid->setOffer($data);
+        $bid->setItem($data);
         $bid->setUser($user);
         $bid->setDeletable(false);
         $bid->setQuantity($data->getInitialBid());
@@ -48,8 +54,7 @@ class OfferCreator implements ProcessorInterface
             $this->entityManager->persist($bid);
             $this->entityManager->flush();
         } catch (Exception $exception) {
-            echo "Error\n";
-            var_dump($exception);
+            throw new Exception($exception->getMessage(), 500);
         }
     }
 }

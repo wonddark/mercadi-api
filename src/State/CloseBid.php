@@ -6,11 +6,12 @@ use ApiPlatform\Metadata\Operation;
 use ApiPlatform\State\ProcessorInterface;
 use App\Entity\Bid;
 use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\Exception\NotSupported;
 use Exception;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 use Symfony\Component\HttpKernel\Exception\UnprocessableEntityHttpException;
 
-class CloseOffer implements ProcessorInterface
+class CloseBid implements ProcessorInterface
 {
     private EntityManager $entityManager;
 
@@ -18,6 +19,10 @@ class CloseOffer implements ProcessorInterface
     {
         $this->entityManager = $entityManager;
     }
+
+    /**
+     * @throws NotSupported
+     */
     public function process(
         mixed $data,
         Operation $operation,
@@ -29,7 +34,7 @@ class CloseOffer implements ProcessorInterface
             $bids = $this
                 ->entityManager
                 ->getRepository(Bid::class)
-                ->findBy(["offer" => $data]);
+                ->findBy(["item" => $data]);
             try {
                 foreach ($bids as $bid) {
                     $bid->setDeletable(false);
@@ -41,7 +46,7 @@ class CloseOffer implements ProcessorInterface
                 throw new HttpException(500, $exception->getMessage());
             }
         } else {
-            throw new UnprocessableEntityHttpException("Offer is already closed");
+            throw new UnprocessableEntityHttpException("Bids are already closed");
         }
     }
 }

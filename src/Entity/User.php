@@ -76,11 +76,11 @@ class User
 
     #[ORM\OneToMany(
         mappedBy: 'user',
-        targetEntity: Offer::class,
+        targetEntity: Item::class,
         orphanRemoval: true
     )]
     #[Groups(["user:read"])]
-    private Collection $offers;
+    private Collection $items;
 
     #[ORM\OneToMany(
         mappedBy: 'user',
@@ -93,7 +93,7 @@ class User
     #[Pure]
     public function __construct()
     {
-        $this->offers = new ArrayCollection();
+        $this->items = new ArrayCollection();
         $this->bids = new ArrayCollection();
     }
 
@@ -114,6 +114,7 @@ class User
         return $this;
     }
 
+    /** @noinspection PhpUnused */
     public function getLastname(): ?string
     {
         return $this->lastname;
@@ -126,6 +127,7 @@ class User
         return $this;
     }
 
+    /** @noinspection PhpUnused */
     public function getAccount(): ?Account
     {
         return $this->account;
@@ -139,29 +141,30 @@ class User
     }
 
     /**
-     * @return Collection<int, Bid>
+     * @return Collection<int, Item>
      */
-    public function getOffers(): Collection
+    public function getItems(): Collection
     {
-        return $this->offers;
+        return $this->items;
     }
 
-    public function addOffer(Offer $offer): self
+    /** @noinspection PhpUnused */
+    public function addItem(Item $item): self
     {
-        if (!$this->offers->contains($offer)) {
-            $this->offers->add($offer);
-            $offer->setUser($this);
+        if (!$this->items->contains($item)) {
+            $this->items->add($item);
+            $item->setUser($this);
         }
 
         return $this;
     }
 
-    public function removeOffer(Offer $offer): self
+    /** @noinspection PhpUnused */
+    public function removeItem(Item $item): self
     {
-        if ($this->offers->removeElement($offer)) {
-            // set the owning side to null (unless already changed)
-            if ($offer->getUser() === $this) {
-                $offer->setUser(null);
+        if ($this->items->removeElement($item)) {
+            if ($item->getUser() === $this) {
+                $item->setUser(null);
             }
         }
 
@@ -170,12 +173,14 @@ class User
 
     /**
      * @return Collection<int, Bid>
+     * @noinspection PhpUnused
      */
     public function getBids(): Collection
     {
         return $this->bids;
     }
 
+    /** @noinspection PhpUnused */
     public function addBid(Bid $bid): self
     {
         if (!$this->bids->contains($bid)) {
@@ -186,10 +191,10 @@ class User
         return $this;
     }
 
+    /** @noinspection PhpUnused */
     public function removeBid(Bid $bid): self
     {
         if ($this->bids->removeElement($bid)) {
-            // set the owning side to null (unless already changed)
             if ($bid->getUser() === $this) {
                 $bid->setUser(null);
             }

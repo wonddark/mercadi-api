@@ -5,12 +5,12 @@ namespace App\State;
 use ApiPlatform\Metadata\Operation;
 use ApiPlatform\State\ProviderInterface;
 use App\Entity\Bid;
-use App\Entity\Offer;
+use App\Entity\Item;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
-class GetHighestBidPerOffer implements ProviderInterface
+class GetHighestBidPerItem implements ProviderInterface
 {
     public function __construct(private readonly EntityManagerInterface $manager)
     {
@@ -18,16 +18,16 @@ class GetHighestBidPerOffer implements ProviderInterface
 
     public function provide(Operation $operation, array $uriVariables = [], array $context = []): object|null
     {
-        $offerId = $uriVariables["id"];
-        if (!$offerId) {
-            throw new BadRequestHttpException("You must specify the offer id");
+        $itemId = $uriVariables["id"];
+        if (!$itemId) {
+            throw new BadRequestHttpException("You must specify the item id");
         }
 
-        $offer = $this->manager->getRepository(Offer::class)->find($offerId);
-        if (!$offer) {
-            throw new NotFoundHttpException("Referred offer cannot be fount");
+        $item = $this->manager->getRepository(Item::class)->find($itemId);
+        if (!$item) {
+            throw new NotFoundHttpException("Referred item cannot be fount");
         }
 
-        return $this->manager->getRepository(Bid::class)->getHighestPerOffer($offerId);
+        return $this->manager->getRepository(Bid::class)->getHighestPerItem($itemId);
     }
 }

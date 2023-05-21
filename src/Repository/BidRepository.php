@@ -47,12 +47,12 @@ class BidRepository extends ServiceEntityRepository
     /**
      * @throws NonUniqueResultException
      */
-    public function getHighestPerOffer(string $offerId)
+    public function getHighestPerItem(string $itemId)
     {
         $query = $this->createQueryBuilder('b')
-            ->innerJoin("b.offer", "o")
-            ->where("o.id = :offer_id")
-            ->setParameter("offer_id", $offerId, "uuid")
+            ->innerJoin("b.item", "item")
+            ->where("item.id = :item_id")
+            ->setParameter("item_id", $itemId, "uuid")
             ->orderBy("b.quantity", "DESC")
             ->setMaxResults(1);
 
@@ -67,16 +67,16 @@ class BidRepository extends ServiceEntityRepository
         $firstResult = ($page - 1) * $itemsPerPage;
         $query = $this->createQueryBuilder("b")
             ->innerJoin("b.user", "user")
-            ->innerJoin("b.offer", "o")
-            ->innerJoin("o.user", "u")
-            ->addSelect("o")
+            ->innerJoin("b.item", "item")
+            ->innerJoin("item.user", "u")
+            ->addSelect("item")
             ->where("user.id = :userId")
             ->andWhere("u.id != :userId")
             ->setParameter("userId", $userId, "uuid");
 
         if ($openStatus !== null) {
             $query
-                ->andWhere("o.open = :openStatus")
+                ->andWhere("item.open = :openStatus")
                 ->setParameter("openStatus", $openStatus);
         }
 

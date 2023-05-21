@@ -12,11 +12,11 @@ use ApiPlatform\Metadata\GetCollection;
 use ApiPlatform\Metadata\Link;
 use ApiPlatform\Metadata\Patch;
 use ApiPlatform\Metadata\Post;
-use App\Repository\OfferRepository;
-use App\Security\Voter\OfferOwnershipVoter;
-use App\State\CloseOffer;
-use App\State\GetOfferFiltered;
-use App\State\OfferCreator;
+use App\Repository\ItemRepository;
+use App\Security\Voter\ItemOwnershipVoter;
+use App\State\CloseBid;
+use App\State\GetItemsFiltered;
+use App\State\ItemCreator;
 use DateTimeImmutable;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -25,77 +25,77 @@ use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Uid\Uuid;
 use Symfony\Component\Validator\Constraints as Assert;
 
-#[ORM\Entity(repositoryClass: OfferRepository::class)]
+#[ORM\Entity(repositoryClass: ItemRepository::class)]
 #[ApiResource(
     normalizationContext: [
-        "groups" => ["offer:general:read"]
+        "groups" => ["item:general:read"]
     ],
     order: ["publishedAt" => 'DESC', "bids.publishedAt" => "DESC"],
     paginationClientItemsPerPage: true
 )]
 #[Get]
-#[GetCollection(provider: GetOfferFiltered::class)]
+#[GetCollection(provider: GetItemsFiltered::class)]
 #[GetCollection(
-    uriTemplate: "/user/{id}/offers",
+    uriTemplate: "/user/{id}/items",
     uriVariables: [
-        "id" => new Link(fromProperty: "offers", fromClass: User::class)
+        "id" => new Link(fromProperty: "items", fromClass: User::class)
     ]
 )]
 #[Post(
     normalizationContext: [
-        "groups" => ["offer:post:read"]
+        "groups" => ["item:post:read"]
     ],
     denormalizationContext: [
-        "groups" => ["offer:post:write"]
+        "groups" => ["item:post:write"]
     ],
-    processor: OfferCreator::class
+    processor: ItemCreator::class
 )]
 #[Patch(
     normalizationContext: [
-        "groups" => ["offer:patch:read"]
+        "groups" => ["item:patch:read"]
     ],
     denormalizationContext: [
-        "groups" => ["offer:patch:write"]
+        "groups" => ["item:patch:write"]
     ],
-    security: "is_granted('" . OfferOwnershipVoter::EDIT . "', object)"
+    security: "is_granted('" . ItemOwnershipVoter::EDIT . "', object)"
 )]
 #[Delete(
-    security: "is_granted('" . OfferOwnershipVoter::DELETE . "', object)",
-    processor: CloseOffer::class
+    security: "is_granted('" . ItemOwnershipVoter::DELETE . "', object)",
+    processor: CloseBid::class
 )]
 #[ApiFilter(BooleanFilter::class, properties: ["open"])]
 #[ApiFilter(SearchFilter::class, properties: ["name" => 'partial', "description" => 'partial'])]
-class Offer
+class Item
 {
     #[ORM\Id]
     #[ORM\Column(type: 'uuid', unique: true)]
     #[ORM\GeneratedValue(strategy: 'CUSTOM')]
     #[ORM\CustomIdGenerator(class: 'doctrine.uuid_generator')]
     #[Groups([
-        "offer:post:read",
-        "offer:patch:read",
-        "offer:general:read",
+        "item:post:read",
+        "item:patch:read",
+        "item:general:read",
         "bid:general:read"
     ])]
     private ?Uuid $id = null;
 
-    #[ORM\ManyToOne(inversedBy: "offers")]
+    #[ORM\ManyToOne(inversedBy: "items")]
     #[ORM\JoinColumn(nullable: false)]
     #[Groups([
-        "offer:post:read",
-        "offer:patch:read",
-        "offer:general:read"
+        "item:post:read",
+        "item:patch:read",
+        "item:general:read"
     ])]
     private ?User $user = null;
 
     #[ORM\Column(length: 255)]
     #[Assert\NotBlank]
     #[Groups([
-        "offer:post:read",
-        "offer:post:write",
-        "offer:patch:read",
-        "offer:patch:write",
-        "offer:general:read",
+        "item:post:read",
+        "item:post:write",
+        "item:patch:read",
+        "item:patch:write",
+        "item:general:read",
         "bid:general:read"
     ])]
     private ?string $name = null;
@@ -103,64 +103,64 @@ class Offer
     #[ORM\Column]
     #[Assert\GreaterThan(49)]
     #[Assert\LessThan(1_000_001)]
-    #[Groups(["offer:post:write"])]
+    #[Groups(["item:post:write"])]
     private ?float $initialBid = null;
 
     #[ORM\Column(length: 255)]
     #[Assert\NotBlank]
     #[Assert\Length(min: 70)]
     #[Groups([
-        "offer:post:read",
-        "offer:post:write",
-        "offer:patch:read",
-        "offer:patch:write",
-        "offer:general:read"
+        "item:post:read",
+        "item:post:write",
+        "item:patch:read",
+        "item:patch:write",
+        "item:general:read"
     ])]
     private ?string $description = null;
 
     #[ORM\Column]
     #[Groups([
-        "offer:post:read",
-        "offer:patch:read",
-        "offer:general:read"
+        "item:post:read",
+        "item:patch:read",
+        "item:general:read"
     ])]
     private ?DateTimeImmutable $publishedAt;
 
     #[ORM\OneToMany(
-        mappedBy: 'offer',
+        mappedBy: 'item',
         targetEntity: Bid::class,
         orphanRemoval: true
     )]
     #[Groups([
-        "offer:post:read",
-        "offer:patch:read",
-        "offer:general:read"
+        "item:post:read",
+        "item:patch:read",
+        "item:general:read"
     ])]
     private Collection $bids;
 
     #[ORM\Column]
     #[Groups([
-        "offer:post:read",
-        "offer:patch:read",
-        "offer:general:read",
+        "item:post:read",
+        "item:patch:read",
+        "item:general:read",
         "bid:general:read"
     ])]
     private ?bool $open = true;
 
-    #[ORM\OneToMany(mappedBy: 'offer', targetEntity: MediaObject::class, orphanRemoval: true)]
+    #[ORM\OneToMany(mappedBy: 'item', targetEntity: MediaObject::class, orphanRemoval: true)]
     #[Groups([
-        "offer:post:read",
-        "offer:patch:read",
-        "offer:general:read"
+        "item:post:read",
+        "item:patch:read",
+        "item:general:read"
     ])]
     private Collection $medias;
 
     #[ORM\OneToOne(cascade: ['persist', 'remove'])]
     #[ORM\JoinColumn(nullable: true)]
     #[Groups([
-        "offer:post:read",
-        "offer:patch:read",
-        "offer:general:read"
+        "item:post:read",
+        "item:patch:read",
+        "item:general:read"
     ])]
     private ?Bid $highestBid = null;
 
@@ -248,7 +248,7 @@ class Offer
     {
         if (!$this->bids->contains($bid)) {
             $this->bids->add($bid);
-            $bid->setOffer($this);
+            $bid->setItem($this);
         }
 
         return $this;
@@ -258,8 +258,8 @@ class Offer
     {
         if ($this->bids->removeElement($bid)) {
             // set the owning side to null (unless already changed)
-            if ($bid->getOffer() === $this) {
-                $bid->setOffer(null);
+            if ($bid->getItem() === $this) {
+                $bid->setItem(null);
             }
         }
 
@@ -290,7 +290,7 @@ class Offer
     {
         if (!$this->medias->contains($media)) {
             $this->medias->add($media);
-            $media->setOffer($this);
+            $media->setItem($this);
         }
 
         return $this;
@@ -300,8 +300,8 @@ class Offer
     {
         if ($this->medias->removeElement($media)) {
             // set the owning side to null (unless already changed)
-            if ($media->getOffer() === $this) {
-                $media->setOffer(null);
+            if ($media->getItem() === $this) {
+                $media->setItem(null);
             }
         }
 

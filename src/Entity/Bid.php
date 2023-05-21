@@ -10,7 +10,7 @@ use ApiPlatform\Metadata\Link;
 use ApiPlatform\Metadata\Post;
 use App\Repository\BidRepository;
 use App\State\BidCreator;
-use App\State\GetHighestBidPerOffer;
+use App\State\GetHighestBidPerItem;
 use App\State\GetUserBids;
 use App\State\RetireBid;
 use DateTimeImmutable;
@@ -28,26 +28,26 @@ use Symfony\Component\Uid\Uuid;
 )]
 #[Get]
 #[Get(
-    uriTemplate: "/offer/{id}/bids/highest",
+    uriTemplate: "/item/{id}/bids/highest",
     normalizationContext: [
         "groups" => ["bid:get:highest:read"]
     ],
-    provider: GetHighestBidPerOffer::class,
+    provider: GetHighestBidPerItem::class,
 )]
 #[GetCollection(
     uriTemplate: "/user/{id}/bids",
     uriVariables: [
-        "id" => new Link(fromClass: User::class, fromProperty: "bids"),
+        "id" => new Link(fromProperty: "bids", fromClass: User::class),
     ],
     filters: [
-        "offer.open_filter"
+        "item.open_filter"
     ],
     provider: GetUserBids::class
 )]
 #[GetCollection(
-    uriTemplate: "/offer/{id}/bids",
+    uriTemplate: "/item/{id}/bids",
     uriVariables: [
-        "id" => new Link(fromClass: Offer::class, fromProperty: "bids")
+        "id" => new Link(fromProperty: "bids", fromClass: Item::class)
     ]
 )]
 #[Post(
@@ -68,22 +68,22 @@ class Bid
     #[ORM\Column(type: 'uuid', unique: true)]
     #[ORM\GeneratedValue(strategy: 'CUSTOM')]
     #[ORM\CustomIdGenerator(class: 'doctrine.uuid_generator')]
-    #[Groups(["offer:general:read", "bid:post:read", "bid:general:read", "bid:get:highest:read"])]
+    #[Groups(["item:general:read", "bid:post:read", "bid:general:read", "bid:get:highest:read"])]
     private ?Uuid $id = null;
 
     #[ORM\ManyToOne(inversedBy: 'bids')]
     #[ORM\JoinColumn(nullable: false)]
-    #[Groups(["offer:general:read", "bid:post:read", "bid:general:read", "bid:get:highest:read"])]
+    #[Groups(["item:general:read", "bid:post:read", "bid:general:read", "bid:get:highest:read"])]
     private ?User $user = null;
 
     #[ORM\ManyToOne(inversedBy: 'bids')]
     #[ORM\JoinColumn(nullable: false)]
     #[Groups(["bid:post:write", "bid:post:read", "bid:general:read"])]
-    private ?Offer $offer = null;
+    private ?Item $item = null;
 
     #[ORM\Column]
     #[Groups([
-        "offer:general:read",
+        "item:general:read",
         "bid:post:write",
         "bid:post:read",
         "bid:general:read",
@@ -92,7 +92,7 @@ class Bid
     private ?float $quantity = null;
 
     #[ORM\Column]
-    #[Groups(["offer:general:read", "bid:post:read", "bid:general:read", "bid:get:highest:read"])]
+    #[Groups(["item:general:read", "bid:post:read", "bid:general:read", "bid:get:highest:read"])]
     private ?DateTimeImmutable $publishedAt;
 
     #[ORM\Column]
@@ -121,14 +121,14 @@ class Bid
         return $this;
     }
 
-    public function getOffer(): ?Offer
+    public function getItem(): ?Item
     {
-        return $this->offer;
+        return $this->item;
     }
 
-    public function setOffer(?Offer $offer): self
+    public function setItem(?Item $item): self
     {
-        $this->offer = $offer;
+        $this->item = $item;
 
         return $this;
     }

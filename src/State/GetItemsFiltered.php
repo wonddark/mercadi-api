@@ -4,10 +4,10 @@ namespace App\State;
 
 use ApiPlatform\Metadata\Operation;
 use ApiPlatform\State\ProviderInterface;
-use App\Entity\Offer;
+use App\Entity\Item;
 use Doctrine\ORM\EntityManagerInterface;
 
-class GetOfferFiltered implements ProviderInterface
+class GetItemsFiltered implements ProviderInterface
 {
     public function __construct(private readonly EntityManagerInterface $manager)
     {
@@ -19,7 +19,7 @@ class GetOfferFiltered implements ProviderInterface
         $page = (int)$context["filters"]["page"] ?: 1;
         return $this
             ->manager
-            ->getRepository(Offer::class)
+            ->getRepository(Item::class)
             ->searchByNameOrDescription($pattern, $page, $itemsPerPage);
     }
 }

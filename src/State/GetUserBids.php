@@ -18,8 +18,8 @@ class GetUserBids implements ProviderInterface
         $userId = $uriVariables["id"];
         $itemsPerPage = (int)$context["filters"]["itemsPerPage"] ?: 30;
         $page = (int)$context["filters"]["page"] ?: 1;
-        $open = array_key_exists("offer.open", $context["filters"]) ?
-            $context["filters"]["offer.open"] === "true" : null;
+        $open = array_key_exists("item.open", $context["filters"]) ?
+            $context["filters"]["item.open"] === "true" : null;
         return $this->manager->getRepository(Bid::class)->getUserBids($userId, $page, $itemsPerPage, $open);
     }
 }
