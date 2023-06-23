@@ -26,8 +26,18 @@ class ItemOwnershipVoter extends Voter
             && $subject instanceof Item;
     }
 
-    protected function voteOnAttribute(string $attribute, $subject, TokenInterface $token): bool
-    {
+    /**
+     * @param string $attribute
+     * @param Item $subject
+     * @param TokenInterface $token
+     * @return bool
+     */
+    protected function voteOnAttribute(
+        string $attribute,
+        /* @var Item $subject */
+        mixed $subject,
+        TokenInterface $token
+    ): bool {
         /* @var User $user */
         $user = $token->getUser();
         if (!$user instanceof UserInterface) {
@@ -37,9 +47,9 @@ class ItemOwnershipVoter extends Voter
         return match ($attribute) {
             self::EDIT =>
                 $this->security->isGranted("ROLE_ADMIN") ||
-                $subject->getUser()->getAccount()->getId() == $user->getId(),
+                $subject->getUser()->getAccount()->getId() === $user->getId(),
             self::DELETE =>
-                $subject->getUser()->getAccount()->getId() == $user->getId(),
+                $subject->getUser()->getAccount()->getId() === $user->getId(),
             default => false,
         };
     }
