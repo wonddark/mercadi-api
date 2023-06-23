@@ -56,10 +56,7 @@ class MediaObject
     #[ORM\GeneratedValue(strategy: 'CUSTOM')]
     #[ORM\CustomIdGenerator(class: 'doctrine.uuid_generator')]
     #[Groups([
-        'media_object:read',
-        "item:post:read",
-        "item:patch:read",
-        "item:general:read"
+        'media_object:read'
     ])]
     private ?Uuid $id = null;
 
