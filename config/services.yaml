@@ -19,6 +19,7 @@ services:
   App\State\CreateRegistration:
     bind:
       $decorated: '@api_platform.doctrine.orm.state.persist_processor'
+      $mailer: '@mailer.mailer'
 
   App\State\ItemCreator:
     bind:
@@ -26,13 +27,18 @@ services:
       $security: '@security.helper'
       $entityManager: '@doctrine.orm.default_entity_manager'
 
-  App\State\BidCreator:
+  App\State\OfferCreator:
     bind:
       $processor: '@api_platform.doctrine.orm.state.persist_processor'
       $security: '@security.helper'
       $entityManager: '@doctrine.orm.default_entity_manager'
 
-  App\State\CloseBid:
+  App\State\OfferRetractor:
+    bind:
+      $processor: '@api_platform.doctrine.orm.state.persist_processor'
+      $entityManager: '@doctrine.orm.default_entity_manager'
+
+  App\State\BiddingCloser:
     bind:
       $entityManager: '@doctrine.orm.default_entity_manager'
 
