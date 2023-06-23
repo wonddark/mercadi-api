@@ -46,12 +46,11 @@ class ItemRepository extends ServiceEntityRepository
     /**
      * @throws QueryException
      */
-    public function searchByNameOrDescription(string $pattern, int $page, int $itemsPerPage): Paginator
+    public function searchByDescription(string $pattern, int $page, int $itemsPerPage): Paginator
     {
         $firstResult = ($page - 1) * $itemsPerPage;
         $query = $this->createQueryBuilder('item')
-            ->orWhere("item.name LIKE :pattern")
-            ->orWhere("item.description LIKE :pattern")
+            ->where("item.description LIKE :pattern")
             ->setParameter("pattern", "%$pattern%")
             ->orderBy('item.publishedAt', 'DESC');
 
