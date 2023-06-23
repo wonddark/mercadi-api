@@ -36,11 +36,12 @@ class User
     #[ORM\CustomIdGenerator(class: 'doctrine.uuid_generator')]
     #[Groups([
         "user:read",
-        "offer:general:read",
-        "offer:post:read",
-        "offer:patch:read",
+        "item:general:read",
+        "item:post:read",
+        "item:patch:read",
         "bid:general:read",
-        "bid:get:highest:read"
+        "bid:get:highest:read",
+        "offer:read"
     ])]
     private ?Uuid $id = null;
 
@@ -48,11 +49,12 @@ class User
     #[Groups([
         "user:read",
         "user:write",
-        "offer:general:read",
-        "offer:post:read",
-        "offer:patch:read",
+        "item:general:read",
+        "item:post:read",
+        "item:patch:read",
         "bid:general:read",
-        "bid:get:highest:read"
+        "bid:get:highest:read",
+        "offer:read"
     ])]
     private ?string $name = null;
 
@@ -61,11 +63,12 @@ class User
         "user:read",
         "user:write",
         "bid:get:highest:read",
-        "offer:general:read",
-        "offer:post:read",
-        "offer:patch:read",
+        "item:general:read",
+        "item:post:read",
+        "item:patch:read",
         "bid:general:read",
-        "bid:get:highest:read"
+        "bid:get:highest:read",
+        "offer:read"
     ])]
     private ?string $lastname = null;
 
@@ -82,19 +85,14 @@ class User
     #[Groups(["user:read"])]
     private Collection $items;
 
-    #[ORM\OneToMany(
-        mappedBy: 'user',
-        targetEntity: Bid::class,
-        orphanRemoval: true
-    )]
-    #[Groups(["user:read"])]
-    private Collection $bids;
+    #[ORM\OneToMany(mappedBy: 'user', targetEntity: Offer::class, orphanRemoval: true)]
+    private Collection $offers;
 
     #[Pure]
     public function __construct()
     {
         $this->items = new ArrayCollection();
-        $this->bids = new ArrayCollection();
+        $this->offers = new ArrayCollection();
     }
 
     public function getId(): ?Uuid
@@ -114,7 +112,6 @@ class User
         return $this;
     }
 
-    /** @noinspection PhpUnused */
     public function getLastname(): ?string
     {
         return $this->lastname;
@@ -127,7 +124,6 @@ class User
         return $this;
     }
 
-    /** @noinspection PhpUnused */
     public function getAccount(): ?Account
     {
         return $this->account;
@@ -148,7 +144,6 @@ class User
         return $this->items;
     }
 
-    /** @noinspection PhpUnused */
     public function addItem(Item $item): self
     {
         if (!$this->items->contains($item)) {
@@ -159,7 +154,6 @@ class User
         return $this;
     }
 
-    /** @noinspection PhpUnused */
     public function removeItem(Item $item): self
     {
         if ($this->items->removeElement($item)) {
@@ -172,31 +166,29 @@ class User
     }
 
     /**
-     * @return Collection<int, Bid>
-     * @noinspection PhpUnused
+     * @return Collection<int, Offer>
      */
-    public function getBids(): Collection
+    public function getOffers(): Collection
     {
-        return $this->bids;
+        return $this->offers;
     }
 
-    /** @noinspection PhpUnused */
-    public function addBid(Bid $bid): self
+    public function addOffer(Offer $offer): self
     {
-        if (!$this->bids->contains($bid)) {
-            $this->bids->add($bid);
-            $bid->setUser($this);
+        if (!$this->offers->contains($offer)) {
+            $this->offers->add($offer);
+            $offer->setUser($this);
         }
 
         return $this;
     }
 
-    /** @noinspection PhpUnused */
-    public function removeBid(Bid $bid): self
+    public function removeOffer(Offer $offer): self
     {
-        if ($this->bids->removeElement($bid)) {
-            if ($bid->getUser() === $this) {
-                $bid->setUser(null);
+        if ($this->offers->removeElement($offer)) {
+            // set the owning side to null (unless already changed)
+            if ($offer->getUser() === $this) {
+                $offer->setUser(null);
             }
         }
 
