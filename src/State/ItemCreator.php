@@ -4,7 +4,9 @@ namespace App\State;
 
 use ApiPlatform\Metadata\Operation;
 use ApiPlatform\State\ProcessorInterface;
-use App\Entity\Bid;
+use App\Entity\Bidding;
+use App\Entity\Item;
+use App\Entity\Offer;
 use App\Entity\User;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\Exception\NotSupported;
@@ -32,6 +34,7 @@ class ItemCreator implements ProcessorInterface
      * @throws Exception
      */
     public function process(
+        /* @var Item $data */
         mixed $data,
         Operation $operation,
         array $uriVariables = [],
@@ -44,14 +47,20 @@ class ItemCreator implements ProcessorInterface
             ->findOneBy(["account" => $this->security->getUser()]);
         $data->setUser($user);
         $this->processor->process($data, $operation, $uriVariables, $context);
-        $bid = new Bid();
-        $bid->setItem($data);
-        $bid->setUser($user);
-        $bid->setDeletable(false);
-        $bid->setQuantity($data->getInitialBid());
-        $data->setHighestBid($bid);
+        if ($data->isBidding()) {
+            $bids = new Bidding();
+            $bids->setItem($data);
+            $bids->setHighestOffer($data->getPrice());
+            $data->setBids($bids);
+            $offer = new Offer();
+            $offer->setBids($bids);
+            $bids->addOffer($offer);
+            $bids->setTotalOffers(1);
+            $offer->setUser($user);
+            $offer->setQuantity($data->getPrice());
+            $this->entityManager->persist($offer);
+        }
         try {
-            $this->entityManager->persist($bid);
             $this->entityManager->flush();
         } catch (Exception $exception) {
             throw new Exception($exception->getMessage(), 500);
