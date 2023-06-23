@@ -5,21 +5,23 @@ namespace App\State;
 use ApiPlatform\Metadata\Operation;
 use ApiPlatform\State\ProcessorInterface;
 use App\Entity\Account;
+use Symfony\Component\Mailer\Exception\TransportExceptionInterface;
+use Symfony\Component\Mailer\MailerInterface;
+use Symfony\Component\Mime\Email;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
 class CreateRegistration implements ProcessorInterface
 {
-    private ProcessorInterface $processor;
-    private UserPasswordHasherInterface $passwordHasher;
-
     public function __construct(
-        ProcessorInterface $decorated,
-        UserPasswordHasherInterface $passwordHasher
+        private readonly ProcessorInterface $decorated,
+        private readonly UserPasswordHasherInterface $passwordHasher,
+        private readonly MailerInterface $mailer
     ) {
-        $this->processor = $decorated;
-        $this->passwordHasher = $passwordHasher;
     }
 
+    /**
+     * @throws TransportExceptionInterface
+     */
     public function process(
         mixed $data,
         Operation $operation,
@@ -33,11 +35,22 @@ class CreateRegistration implements ProcessorInterface
             $plainPassword
         );
         $data->setPassword($hashedPassword);
-        return $this->processor->process(
+
+        $this->decorated->process(
             $data,
             $operation,
             $uriVariables,
             $context
         );
+
+        $email = (new Email())
+            ->to($data->getEmail())
+            ->subject('Thank you for registering at Stocked!')
+            ->text("We are glad to see you around. Please confirm your registration using the following code: " .
+                $data->getId())
+            ->html('<p>We are glad to see you around. Please confirm your registration using the following code: ' .
+                $data->getId() . '</p>');
+
+        $this->mailer->send($email);
     }
 }
