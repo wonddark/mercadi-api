@@ -2,11 +2,9 @@
 
 namespace App\Entity;
 
-use ApiPlatform\Doctrine\Orm\Filter\BooleanFilter;
 use ApiPlatform\Doctrine\Orm\Filter\SearchFilter;
 use ApiPlatform\Metadata\ApiFilter;
 use ApiPlatform\Metadata\ApiResource;
-use ApiPlatform\Metadata\Delete;
 use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\GetCollection;
 use ApiPlatform\Metadata\Link;
@@ -14,12 +12,11 @@ use ApiPlatform\Metadata\Patch;
 use ApiPlatform\Metadata\Post;
 use App\Repository\ItemRepository;
 use App\Security\Voter\ItemOwnershipVoter;
-use App\State\CloseBid;
-use App\State\GetItemsFiltered;
 use App\State\ItemCreator;
 use DateTimeImmutable;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Uid\Uuid;
@@ -30,11 +27,11 @@ use Symfony\Component\Validator\Constraints as Assert;
     normalizationContext: [
         "groups" => ["item:general:read"]
     ],
-    order: ["publishedAt" => 'DESC', "bids.publishedAt" => "DESC"],
+    order: ["publishedAt" => 'DESC'],
     paginationClientItemsPerPage: true
 )]
 #[Get]
-#[GetCollection(provider: GetItemsFiltered::class)]
+#[GetCollection]
 #[GetCollection(
     uriTemplate: "/user/{id}/items",
     uriVariables: [
@@ -59,12 +56,7 @@ use Symfony\Component\Validator\Constraints as Assert;
     ],
     security: "is_granted('" . ItemOwnershipVoter::EDIT . "', object)"
 )]
-#[Delete(
-    security: "is_granted('" . ItemOwnershipVoter::DELETE . "', object)",
-    processor: CloseBid::class
-)]
-#[ApiFilter(BooleanFilter::class, properties: ["open"])]
-#[ApiFilter(SearchFilter::class, properties: ["name" => 'partial', "description" => 'partial'])]
+#[ApiFilter(SearchFilter::class, properties: ["description" => 'partial'])]
 class Item
 {
     #[ORM\Id]
@@ -75,7 +67,7 @@ class Item
         "item:post:read",
         "item:patch:read",
         "item:general:read",
-        "bid:general:read"
+        "user:offer:read"
     ])]
     private ?Uuid $id = null;
 
@@ -96,25 +88,7 @@ class Item
         "item:patch:read",
         "item:patch:write",
         "item:general:read",
-        "bid:general:read"
-    ])]
-    private ?string $name = null;
-
-    #[ORM\Column]
-    #[Assert\GreaterThan(49)]
-    #[Assert\LessThan(1_000_001)]
-    #[Groups(["item:post:write"])]
-    private ?float $initialBid = null;
-
-    #[ORM\Column(length: 255)]
-    #[Assert\NotBlank]
-    #[Assert\Length(min: 70)]
-    #[Groups([
-        "item:post:read",
-        "item:post:write",
-        "item:patch:read",
-        "item:patch:write",
-        "item:general:read"
+        "user:offer:read"
     ])]
     private ?string $description = null;
 
@@ -126,27 +100,6 @@ class Item
     ])]
     private ?DateTimeImmutable $publishedAt;
 
-    #[ORM\OneToMany(
-        mappedBy: 'item',
-        targetEntity: Bid::class,
-        orphanRemoval: true
-    )]
-    #[Groups([
-        "item:post:read",
-        "item:patch:read",
-        "item:general:read"
-    ])]
-    private Collection $bids;
-
-    #[ORM\Column]
-    #[Groups([
-        "item:post:read",
-        "item:patch:read",
-        "item:general:read",
-        "bid:general:read"
-    ])]
-    private ?bool $open = true;
-
     #[ORM\OneToMany(mappedBy: 'item', targetEntity: MediaObject::class, orphanRemoval: true)]
     #[Groups([
         "item:post:read",
@@ -155,18 +108,72 @@ class Item
     ])]
     private Collection $medias;
 
-    #[ORM\OneToOne(cascade: ['persist', 'remove'])]
-    #[ORM\JoinColumn(nullable: true)]
+    #[ORM\OneToOne(mappedBy: 'item', cascade: ['persist', 'remove'])]
     #[Groups([
         "item:post:read",
         "item:patch:read",
         "item:general:read"
     ])]
-    private ?Bid $highestBid = null;
+    private ?Bidding $bids = null;
+
+    #[ORM\Column]
+    #[Groups([
+        "item:post:read",
+        "item:post:write",
+        "item:patch:read",
+        "item:patch:write",
+        "item:general:read"
+    ])]
+    private float $price = 0;
+
+    #[ORM\Column]
+    #[Groups([
+        "item:post:read",
+        "item:post:write",
+        "item:patch:read",
+        "item:patch:write",
+        "item:general:read"
+    ])]
+    private bool $bidding = true;
+
+    #[ORM\Column(type: Types::SIMPLE_ARRAY, nullable: true)]
+    #[Groups([
+        "item:post:read",
+        "item:post:write",
+        "item:patch:read",
+        "item:patch:write",
+        "item:general:read"
+    ])]
+    private array $contactPhones = [];
+
+    #[ORM\Column(type: Types::TEXT)]
+    #[Groups([
+        "item:post:read",
+        "item:post:write",
+        "item:patch:read",
+        "item:patch:write",
+        "item:general:read"
+    ])]
+    private ?string $additionalInfo = "";
+
+    /*
+     * Home delivery values as small int
+     * 0 => No home delivery
+     * 1 => Home delivery included in the price
+     * 2 => Home delivery with additional cost
+     */
+    #[ORM\Column(type: Types::SMALLINT)]
+    #[Groups([
+        "item:post:read",
+        "item:post:write",
+        "item:patch:read",
+        "item:patch:write",
+        "item:general:read"
+    ])]
+    private ?int $homeDelivery = 0;
 
     public function __construct()
     {
-        $this->bids = new ArrayCollection();
         $this->publishedAt = new DateTimeImmutable();
         $this->medias = new ArrayCollection();
     }
@@ -188,32 +195,6 @@ class Item
         return $this;
     }
 
-    public function getName(): ?string
-    {
-        return $this->name;
-    }
-
-    public function setName(string $name): self
-    {
-        $this->name = $name;
-
-        return $this;
-    }
-
-    /** @noinspection PhpUnused */
-    public function getInitialBid(): ?float
-    {
-        return $this->initialBid;
-    }
-
-    /** @noinspection PhpUnused */
-    public function setInitialBid(float $initialBid): self
-    {
-        $this->initialBid = $initialBid;
-
-        return $this;
-    }
-
     public function getDescription(): ?string
     {
         return $this->description;
@@ -226,13 +207,11 @@ class Item
         return $this;
     }
 
-    /** @noinspection PhpUnused */
     public function getPublishedAt(): ?DateTimeImmutable
     {
         return $this->publishedAt;
     }
 
-    /** @noinspection PhpUnused */
     public function setPublishedAt(DateTimeImmutable $publishedAt): self
     {
         $this->publishedAt = $publishedAt;
@@ -241,61 +220,13 @@ class Item
     }
 
     /**
-     * @return Collection<int, Bid>
-     */
-    public function getBids(): Collection
-    {
-        return $this->bids;
-    }
-
-    /** @noinspection PhpUnused */
-    public function addBid(Bid $bid): self
-    {
-        if (!$this->bids->contains($bid)) {
-            $this->bids->add($bid);
-            $bid->setItem($this);
-        }
-
-        return $this;
-    }
-
-    /** @noinspection PhpUnused */
-    public function removeBid(Bid $bid): self
-    {
-        if ($this->bids->removeElement($bid)) {
-            // set the owning side to null (unless already changed)
-            if ($bid->getItem() === $this) {
-                $bid->setItem(null);
-            }
-        }
-
-        return $this;
-    }
-
-    /** @noinspection PhpUnused */
-    public function isOpen(): ?bool
-    {
-        return $this->open;
-    }
-
-    /** @noinspection PhpUnused */
-    public function setOpen(bool $open): self
-    {
-        $this->open = $open;
-
-        return $this;
-    }
-
-    /**
      * @return Collection<int, MediaObject>
-     * @noinspection PhpUnused
      */
     public function getMedias(): Collection
     {
         return $this->medias;
     }
 
-    /** @noinspection PhpUnused */
     public function addMedia(MediaObject $media): self
     {
         if (!$this->medias->contains($media)) {
@@ -306,7 +237,6 @@ class Item
         return $this;
     }
 
-    /** @noinspection PhpUnused */
     public function removeMedia(MediaObject $media): self
     {
         if ($this->medias->removeElement($media)) {
@@ -319,14 +249,79 @@ class Item
         return $this;
     }
 
-    public function getHighestBid(): ?Bid
+    public function getBids(): ?Bidding
     {
-        return $this->highestBid;
+        return $this->bids;
     }
 
-    public function setHighestBid(Bid $highestBid): self
+    public function setBids(Bidding $bids): self
     {
-        $this->highestBid = $highestBid;
+        // set the owning side of the relation if necessary
+        if ($bids->getItem() !== $this) {
+            $bids->setItem($this);
+        }
+
+        $this->bids = $bids;
+
+        return $this;
+    }
+
+    public function getPrice(): ?float
+    {
+        return $this->price;
+    }
+
+    public function setPrice(float $price): self
+    {
+        $this->price = $price;
+
+        return $this;
+    }
+
+    public function isBidding(): ?bool
+    {
+        return $this->bidding;
+    }
+
+    public function setBidding(bool $bidding): self
+    {
+        $this->bidding = $bidding;
+
+        return $this;
+    }
+
+    public function getContactPhones(): array
+    {
+        return $this->contactPhones;
+    }
+
+    public function setContactPhones(array $contactPhones): self
+    {
+        $this->contactPhones = $contactPhones;
+
+        return $this;
+    }
+
+    public function getAdditionalInfo(): ?string
+    {
+        return $this->additionalInfo;
+    }
+
+    public function setAdditionalInfo(string $additionalInfo): self
+    {
+        $this->additionalInfo = $additionalInfo;
+
+        return $this;
+    }
+
+    public function getHomeDelivery(): ?int
+    {
+        return $this->homeDelivery;
+    }
+
+    public function setHomeDelivery(int $homeDelivery): self
+    {
+        $this->homeDelivery = $homeDelivery;
 
         return $this;
     }
