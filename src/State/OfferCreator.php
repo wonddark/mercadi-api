@@ -4,52 +4,68 @@ namespace App\State;
 
 use ApiPlatform\Metadata\Operation;
 use ApiPlatform\State\ProcessorInterface;
-use App\Entity\Bid;
+use App\Entity\Item;
+use App\Entity\Offer;
 use App\Entity\User;
 use Doctrine\ORM\EntityManager;
-use Exception;
-use Symfony\Component\Security\Core\Security;
+use Doctrine\ORM\Exception\NotSupported;
+use Symfony\Bundle\SecurityBundle\Security;
+use Symfony\Component\HttpKernel\Exception\UnprocessableEntityHttpException;
 
 class OfferCreator implements ProcessorInterface
 {
-    private ProcessorInterface $processor;
-    private Security $security;
-    private EntityManager $entityManager;
-
     public function __construct(
-        ProcessorInterface $processor,
-        Security $security,
-        EntityManager $entityManager
+        private readonly ProcessorInterface $processor,
+        private readonly EntityManager $entityManager,
+        private readonly Security $security
     ) {
-        $this->processor = $processor;
-        $this->security = $security;
-        $this->entityManager = $entityManager;
     }
 
+    /**
+     * @throws NotSupported
+     */
     public function process(
+        /* @var Offer $data */
         mixed $data,
         Operation $operation,
         array $uriVariables = [],
         array $context = []
     ): void {
-        $user = $this
-            ->entityManager
-            ->getRepository(User::class)
-            ->findOneBy(["account" => $this->security->getUser()]);
-        $data->setUser($user);
-        $this->processor->process($data, $operation, $uriVariables, $context);
-        $bid = new Bid();
-        $bid->setOffer($data);
-        $bid->setUser($user);
-        $bid->setDeletable(false);
-        $bid->setQuantity($data->getInitialBid());
-        $data->setHighestBid($bid);
-        try {
-            $this->entityManager->persist($bid);
-            $this->entityManager->flush();
-        } catch (Exception $exception) {
-            echo "Error\n";
-            var_dump($exception);
+        $bids = $data->getBids();
+        $highestOffer = $bids->getHighestOffer();
+
+        if ($data->getQuantity() >= $highestOffer) {
+            $user = $this
+                ->entityManager
+                ->getRepository(User::class)
+                ->findOneBy([
+                    "account" => $this->security->getUser()
+                ]);
+
+            /* @var Item $item */
+            $item = $this
+                ->entityManager
+                ->getRepository(Item::class)
+                ->find($bids->getItem()->getId());
+
+            if ($user === $item->getUser()) {
+                throw new UnprocessableEntityHttpException(
+                    "We don't allow users to make bid to its own items"
+                );
+            }
+
+            $data->setUser($user);
+            $bids->setHighestOffer($data->getQuantity());
+            $this->processor->process(
+                $data,
+                $operation,
+                $uriVariables,
+                $context
+            );
+        } else {
+            throw new UnprocessableEntityHttpException(
+                "Offer's quantity must be greater than or equal to the higher active offer"
+            );
         }
     }
 }

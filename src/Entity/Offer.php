@@ -2,69 +2,48 @@
 
 namespace App\Entity;
 
-use ApiPlatform\Doctrine\Orm\Filter\BooleanFilter;
-use ApiPlatform\Doctrine\Orm\Filter\SearchFilter;
-use ApiPlatform\Metadata\ApiFilter;
 use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\Delete;
-use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\GetCollection;
 use ApiPlatform\Metadata\Link;
-use ApiPlatform\Metadata\Patch;
 use ApiPlatform\Metadata\Post;
 use App\Repository\OfferRepository;
-use App\Security\Voter\OfferOwnershipVoter;
-use App\State\CloseOffer;
-use App\State\GetOfferFiltered;
+use App\Security\Voter\OfferVoter;
 use App\State\OfferCreator;
+use App\State\OfferRetractor;
 use DateTimeImmutable;
-use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Uid\Uuid;
-use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: OfferRepository::class)]
-#[ApiResource(
-    normalizationContext: [
-        "groups" => ["offer:general:read"]
-    ],
-    order: ["publishedAt" => 'DESC', "bids.publishedAt" => "DESC"],
-    paginationClientItemsPerPage: true
+#[ApiResource(order: ["quantity" => "DESC"])]
+#[GetCollection(
+    uriTemplate: "/bidding/{id}/offers",
+    uriVariables: ["id" => new Link(fromProperty: "offers", fromClass: Bidding::class)],
+    normalizationContext: ["groups" => ["bidding:offer:read"]],
+    security: "is_granted('" . OfferVoter::VIEW . "', object)",
 )]
-#[Get]
-#[GetCollection(provider: GetOfferFiltered::class)]
 #[GetCollection(
     uriTemplate: "/user/{id}/offers",
-    uriVariables: [
-        "id" => new Link(fromProperty: "offers", fromClass: User::class)
-    ]
+    uriVariables: ["id" => new Link(fromProperty: "offers", fromClass: User::class)],
+    normalizationContext: ["groups" => ["user:offer:read"]],
+    security: "is_granted('" . OfferVoter::VIEW . "', object)",
 )]
 #[Post(
-    normalizationContext: [
-        "groups" => ["offer:post:read"]
-    ],
-    denormalizationContext: [
-        "groups" => ["offer:post:write"]
-    ],
+    uriTemplate: "/bidding/push",
+    normalizationContext: ["groups" => ["bidding:offer:push:read"]],
+    denormalizationContext: ["groups" => ["bidding:offer:push:write"]],
+    security: "is_granted('" . OfferVoter::EDIT . "', object)",
     processor: OfferCreator::class
 )]
-#[Patch(
-    normalizationContext: [
-        "groups" => ["offer:patch:read"]
-    ],
-    denormalizationContext: [
-        "groups" => ["offer:patch:write"]
-    ],
-    security: "is_granted('" . OfferOwnershipVoter::EDIT . "', object)"
-)]
 #[Delete(
-    security: "is_granted('" . OfferOwnershipVoter::DELETE . "', object)",
-    processor: CloseOffer::class
+    uriTemplate: "/bidding/remove/{id}",
+    normalizationContext: [],
+    denormalizationContext: [],
+    security: "is_granted('" . OfferVoter::EDIT . "', object)",
+    processor: OfferRetractor::class
 )]
-#[ApiFilter(BooleanFilter::class, properties: ["open"])]
-#[ApiFilter(SearchFilter::class, properties: ["name" => 'partial', "description" => 'partial'])]
 class Offer
 {
     #[ORM\Id]
@@ -72,103 +51,56 @@ class Offer
     #[ORM\GeneratedValue(strategy: 'CUSTOM')]
     #[ORM\CustomIdGenerator(class: 'doctrine.uuid_generator')]
     #[Groups([
-        "offer:post:read",
-        "offer:patch:read",
-        "offer:general:read",
-        "bid:general:read"
+        "bidding:offer:read",
+        "user:offer:read",
+        "bidding:offer:push:read"
     ])]
     private ?Uuid $id = null;
 
-    #[ORM\ManyToOne(inversedBy: "offers")]
-    #[ORM\JoinColumn(nullable: false)]
-    #[Groups([
-        "offer:post:read",
-        "offer:patch:read",
-        "offer:general:read"
-    ])]
-    private ?User $user = null;
-
-    #[ORM\Column(length: 255)]
-    #[Assert\NotBlank]
-    #[Groups([
-        "offer:post:read",
-        "offer:post:write",
-        "offer:patch:read",
-        "offer:patch:write",
-        "offer:general:read",
-        "bid:general:read"
-    ])]
-    private ?string $name = null;
-
     #[ORM\Column]
-    #[Assert\GreaterThan(49)]
-    #[Assert\LessThan(1_000_001)]
-    #[Groups(["offer:post:write"])]
-    private ?float $initialBid = null;
-
-    #[ORM\Column(length: 255)]
-    #[Assert\NotBlank]
-    #[Assert\Length(min: 70)]
     #[Groups([
-        "offer:post:read",
-        "offer:post:write",
-        "offer:patch:read",
-        "offer:patch:write",
-        "offer:general:read"
+        "bidding:offer:read",
+        "user:offer:read",
+        "bidding:offer:push:read",
+        "bidding:offer:push:write"
     ])]
-    private ?string $description = null;
+    private ?float $quantity = 0;
 
     #[ORM\Column]
     #[Groups([
-        "offer:post:read",
-        "offer:patch:read",
-        "offer:general:read"
+        "bidding:offer:read",
+        "user:offer:read",
+        "bidding:offer:push:read"
     ])]
     private ?DateTimeImmutable $publishedAt;
 
-    #[ORM\OneToMany(
-        mappedBy: 'offer',
-        targetEntity: Bid::class,
-        orphanRemoval: true
-    )]
-    #[Groups([
-        "offer:post:read",
-        "offer:patch:read",
-        "offer:general:read"
-    ])]
-    private Collection $bids;
-
     #[ORM\Column]
     #[Groups([
-        "offer:post:read",
-        "offer:patch:read",
-        "offer:general:read",
-        "bid:general:read"
+        "bidding:offer:read",
+        "user:offer:read",
+        "bidding:offer:push:read"
     ])]
-    private ?bool $open = true;
+    private ?bool $deletable = false;
 
-    #[ORM\OneToMany(mappedBy: 'offer', targetEntity: MediaObject::class, orphanRemoval: true)]
+    #[ORM\ManyToOne(inversedBy: 'offers')]
+    #[ORM\JoinColumn(nullable: false)]
     #[Groups([
-        "offer:post:read",
-        "offer:patch:read",
-        "offer:general:read"
+        "bidding:offer:read"
     ])]
-    private Collection $medias;
+    private ?User $user = null;
 
-    #[ORM\OneToOne(cascade: ['persist', 'remove'])]
-    #[ORM\JoinColumn(nullable: true)]
+    #[ORM\ManyToOne(cascade: ['persist', 'remove'], inversedBy: 'offers')]
+    #[ORM\JoinColumn(nullable: false)]
     #[Groups([
-        "offer:post:read",
-        "offer:patch:read",
-        "offer:general:read"
+        "user:offer:read",
+        "bidding:offer:push:read",
+        "bidding:offer:push:write"
     ])]
-    private ?Bid $highestBid = null;
+    private ?Bidding $bids = null;
 
     public function __construct()
     {
-        $this->bids = new ArrayCollection();
         $this->publishedAt = new DateTimeImmutable();
-        $this->medias = new ArrayCollection();
     }
 
     public function getId(): ?Uuid
@@ -176,50 +108,14 @@ class Offer
         return $this->id;
     }
 
-    public function getUser(): ?User
+    public function getQuantity(): ?float
     {
-        return $this->user;
+        return $this->quantity;
     }
 
-    public function setUser(?User $user): self
+    public function setQuantity(float $quantity): self
     {
-        $this->user = $user;
-
-        return $this;
-    }
-
-    public function getName(): ?string
-    {
-        return $this->name;
-    }
-
-    public function setName(string $name): self
-    {
-        $this->name = $name;
-
-        return $this;
-    }
-
-    public function getInitialBid(): ?float
-    {
-        return $this->initialBid;
-    }
-
-    public function setInitialBid(float $initialBid): self
-    {
-        $this->initialBid = $initialBid;
-
-        return $this;
-    }
-
-    public function getDescription(): ?string
-    {
-        return $this->description;
-    }
-
-    public function setDescription(string $description): self
-    {
-        $this->description = $description;
+        $this->quantity = $quantity;
 
         return $this;
     }
@@ -236,86 +132,38 @@ class Offer
         return $this;
     }
 
-    /**
-     * @return Collection<int, Bid>
-     */
-    public function getBids(): Collection
+    public function isDeletable(): ?bool
+    {
+        return $this->deletable;
+    }
+
+    public function setDeletable(bool $deletable): self
+    {
+        $this->deletable = $deletable;
+
+        return $this;
+    }
+
+    public function getUser(): ?User
+    {
+        return $this->user;
+    }
+
+    public function setUser(?User $user): self
+    {
+        $this->user = $user;
+
+        return $this;
+    }
+
+    public function getBids(): ?Bidding
     {
         return $this->bids;
     }
 
-    public function addBid(Bid $bid): self
+    public function setBids(?Bidding $bids): self
     {
-        if (!$this->bids->contains($bid)) {
-            $this->bids->add($bid);
-            $bid->setOffer($this);
-        }
-
-        return $this;
-    }
-
-    public function removeBid(Bid $bid): self
-    {
-        if ($this->bids->removeElement($bid)) {
-            // set the owning side to null (unless already changed)
-            if ($bid->getOffer() === $this) {
-                $bid->setOffer(null);
-            }
-        }
-
-        return $this;
-    }
-
-    public function isOpen(): ?bool
-    {
-        return $this->open;
-    }
-
-    public function setOpen(bool $open): self
-    {
-        $this->open = $open;
-
-        return $this;
-    }
-
-    /**
-     * @return Collection<int, MediaObject>
-     */
-    public function getMedias(): Collection
-    {
-        return $this->medias;
-    }
-
-    public function addMedia(MediaObject $media): self
-    {
-        if (!$this->medias->contains($media)) {
-            $this->medias->add($media);
-            $media->setOffer($this);
-        }
-
-        return $this;
-    }
-
-    public function removeMedia(MediaObject $media): self
-    {
-        if ($this->medias->removeElement($media)) {
-            // set the owning side to null (unless already changed)
-            if ($media->getOffer() === $this) {
-                $media->setOffer(null);
-            }
-        }
-
-        return $this;
-    }
-
-    public function getHighestBid(): ?Bid
-    {
-        return $this->highestBid;
-    }
-
-    public function setHighestBid(Bid $highestBid): self
-    {
-        $this->highestBid = $highestBid;
+        $this->bids = $bids;
 
         return $this;
     }

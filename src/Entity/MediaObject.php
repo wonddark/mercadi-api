@@ -35,7 +35,7 @@ use Vich\UploaderBundle\Mapping\Annotation as Vich;
                                 'type' => 'string',
                                 'format' => 'binary'
                             ],
-                            'offer_id' => [
+                            'item_id' => [
                                 'type' => 'string',
                                 'format' => 'string'
                             ]
@@ -56,19 +56,16 @@ class MediaObject
     #[ORM\GeneratedValue(strategy: 'CUSTOM')]
     #[ORM\CustomIdGenerator(class: 'doctrine.uuid_generator')]
     #[Groups([
-        'media_object:read',
-        "offer:post:read",
-        "offer:patch:read",
-        "offer:general:read"
+        'media_object:read'
     ])]
     private ?Uuid $id = null;
 
     #[ApiProperty(types: ['https://schema.org/contentUrl'])]
     #[Groups([
         'media_object:read',
-        "offer:post:read",
-        "offer:patch:read",
-        "offer:general:read"
+        "item:post:read",
+        "item:patch:read",
+        "item:general:read"
     ])]
     public ?string $contentUrl = null;
 
@@ -82,22 +79,40 @@ class MediaObject
     #[ORM\ManyToOne(inversedBy: 'medias')]
     #[ORM\JoinColumn(nullable: false)]
     #[Groups(['media_object:read'])]
-    private ?Offer $offer = null;
+    private ?Item $item = null;
 
     public function getId(): ?Uuid
     {
         return $this->id;
     }
 
-    public function getOffer(): ?Offer
+    public function getItem(): ?Item
     {
-        return $this->offer;
+        return $this->item;
     }
 
-    public function setOffer(?Offer $offer): self
+    public function setItem(?Item $item): self
     {
-        $this->offer = $offer;
+        $this->item = $item;
 
         return $this;
+    }
+
+    /**
+     * @return string|null
+     * @noinspection PhpUnused
+     */
+    public function getContentUrl(): ?string
+    {
+        return $this->contentUrl;
+    }
+
+    /**
+     * @param string|null $contentUrl
+     * @noinspection PhpUnused
+     */
+    public function setContentUrl(?string $contentUrl): void
+    {
+        $this->contentUrl = $contentUrl;
     }
 }

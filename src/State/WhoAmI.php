@@ -6,8 +6,9 @@ use ApiPlatform\Metadata\Operation;
 use ApiPlatform\State\ProviderInterface;
 use App\Entity\User;
 use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\Exception\NotSupported;
+use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
-use Symfony\Component\Security\Core\Security;
 
 class WhoAmI implements ProviderInterface
 {
@@ -20,6 +21,9 @@ class WhoAmI implements ProviderInterface
         $this->entityManager = $entityManager;
     }
 
+    /**
+     * @throws NotSupported
+     */
     public function provide(Operation $operation, array $uriVariables = [], array $context = []): object|array|null
     {
         $securityUser = $this->security->getUser();

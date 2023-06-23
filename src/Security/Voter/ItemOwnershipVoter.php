@@ -2,17 +2,18 @@
 
 namespace App\Security\Voter;
 
-use App\Entity\Offer;
+use App\Entity\Item;
+use App\Entity\User;
+use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Security\Core\Authorization\Voter\Voter;
-use Symfony\Component\Security\Core\Security;
 use Symfony\Component\Security\Core\User\UserInterface;
 
-class OfferOwnershipVoter extends Voter
+class ItemOwnershipVoter extends Voter
 {
     private Security $security;
-    public const EDIT = 'OFFER_EDIT';
-    public const DELETE = 'OFFER_DELETE';
+    public const EDIT = 'ITEM_EDIT';
+    public const DELETE = 'ITEM_DELETE';
 
     public function __construct(Security $security)
     {
@@ -22,11 +23,22 @@ class OfferOwnershipVoter extends Voter
     protected function supports(string $attribute, $subject): bool
     {
         return in_array($attribute, [self::EDIT, self::DELETE])
-            && $subject instanceof Offer;
+            && $subject instanceof Item;
     }
 
-    protected function voteOnAttribute(string $attribute, $subject, TokenInterface $token): bool
-    {
+    /**
+     * @param string $attribute
+     * @param Item $subject
+     * @param TokenInterface $token
+     * @return bool
+     */
+    protected function voteOnAttribute(
+        string $attribute,
+        /* @var Item $subject */
+        mixed $subject,
+        TokenInterface $token
+    ): bool {
+        /* @var User $user */
         $user = $token->getUser();
         if (!$user instanceof UserInterface) {
             return false;
@@ -35,9 +47,9 @@ class OfferOwnershipVoter extends Voter
         return match ($attribute) {
             self::EDIT =>
                 $this->security->isGranted("ROLE_ADMIN") ||
-                $subject->getUser()->getAccount()->getId() == $user->getId(),
+                $subject->getUser()->getAccount()->getId() === $user->getId(),
             self::DELETE =>
-                $subject->getUser()->getAccount()->getId() == $user->getId(),
+                $subject->getUser()->getAccount()->getId() === $user->getId(),
             default => false,
         };
     }

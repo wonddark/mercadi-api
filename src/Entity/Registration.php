@@ -101,11 +101,13 @@ class Registration
         return $this->id;
     }
 
+    /** @noinspection PhpUnused */
     public function getEmail(): ?string
     {
         return $this->email;
     }
 
+    /** @noinspection PhpUnused */
     public function setEmail(string $email): self
     {
         $this->email = $email;
@@ -125,11 +127,13 @@ class Registration
         return $this;
     }
 
+    /** @noinspection PhpUnused */
     public function getRegisteredAt(): ?DateTimeImmutable
     {
         return $this->registeredAt;
     }
 
+    /** @noinspection PhpUnused */
     public function setRegisteredAt(DateTimeImmutable $registeredAt): self
     {
         $this->registeredAt = $registeredAt;
@@ -137,11 +141,13 @@ class Registration
         return $this;
     }
 
+    /** @noinspection PhpUnused */
     public function isActive(): ?bool
     {
         return $this->active;
     }
 
+    /** @noinspection PhpUnused */
     public function setActive(bool $isActive): self
     {
         $this->active = $isActive;

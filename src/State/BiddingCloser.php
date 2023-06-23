@@ -4,21 +4,20 @@ namespace App\State;
 
 use ApiPlatform\Metadata\Operation;
 use ApiPlatform\State\ProcessorInterface;
-use App\Entity\Bid;
+use App\Entity\Bidding;
 use Doctrine\ORM\EntityManager;
 use Exception;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 use Symfony\Component\HttpKernel\Exception\UnprocessableEntityHttpException;
 
-class CloseOffer implements ProcessorInterface
+class BiddingCloser implements ProcessorInterface
 {
-    private EntityManager $entityManager;
-
-    public function __construct(EntityManager $entityManager)
+    public function __construct(private readonly EntityManager $entityManager)
     {
-        $this->entityManager = $entityManager;
     }
+
     public function process(
+        /* @var Bidding $data */
         mixed $data,
         Operation $operation,
         array $uriVariables = [],
@@ -26,14 +25,10 @@ class CloseOffer implements ProcessorInterface
     ): void {
         if ($data->isOpen()) {
             $data->setOpen(false);
-            $bids = $this
-                ->entityManager
-                ->getRepository(Bid::class)
-                ->findBy(["offer" => $data]);
             try {
-                foreach ($bids as $bid) {
-                    $bid->setDeletable(false);
-                    $this->entityManager->persist($bid);
+                foreach ($data->getOffers() as $offer) {
+                    $offer->setDeletable(false);
+                    $this->entityManager->persist($offer);
                 }
                 $this->entityManager->persist($data);
                 $this->entityManager->flush();
@@ -41,7 +36,7 @@ class CloseOffer implements ProcessorInterface
                 throw new HttpException(500, $exception->getMessage());
             }
         } else {
-            throw new UnprocessableEntityHttpException("Offer is already closed");
+            throw new UnprocessableEntityHttpException("Bidding is already closed");
         }
     }
 }

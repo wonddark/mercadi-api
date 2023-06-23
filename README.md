@@ -15,7 +15,7 @@
   - firstname
   - lastname
   
-##### offer
+##### item
   - user
   - name
   - initial-bid
@@ -25,6 +25,6 @@
   
 ##### bid
   - user
-  - offer
+  - item
   - quantity
   - date-placed

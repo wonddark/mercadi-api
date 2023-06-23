@@ -2,8 +2,8 @@
 
 namespace App\Controller;
 
+use App\Entity\Item;
 use App\Entity\MediaObject;
-use App\Entity\Offer;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -23,18 +23,18 @@ final class CreateMediaObjectAction extends AbstractController
             throw new BadRequestHttpException('"file" is required');
         }
 
-        $offerId = $request->request->get("offer_id");
-        if (!$offerId) {
-            throw new BadRequestHttpException('"offer_id" is required');
+        $itemId = $request->request->get("item_id");
+        if (!$itemId) {
+            throw new BadRequestHttpException('"item_id" is required');
         }
-        $offer = $manager->getRepository(Offer::class)->find($offerId);
-        if (!$offer) {
-            throw new NotFoundHttpException('The referred offer cannot be found');
+        $item = $manager->getRepository(Item::class)->find($itemId);
+        if (!$item) {
+            throw new NotFoundHttpException('The referred item cannot be found');
         }
 
         $mediaObject = new MediaObject();
         $mediaObject->file = $uploadedFile;
-        $mediaObject->setOffer($offer);
+        $mediaObject->setItem($item);
 
         return $mediaObject;
     }
