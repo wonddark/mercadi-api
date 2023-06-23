@@ -16,10 +16,9 @@ class OfferCreator implements ProcessorInterface
 {
     public function __construct(
         private readonly ProcessorInterface $processor,
-        private readonly EntityManager      $entityManager,
-        private readonly Security           $security
-    )
-    {
+        private readonly EntityManager $entityManager,
+        private readonly Security $security
+    ) {
     }
 
     /**
@@ -27,12 +26,11 @@ class OfferCreator implements ProcessorInterface
      */
     public function process(
         /* @var Offer $data */
-        mixed     $data,
+        mixed $data,
         Operation $operation,
-        array     $uriVariables = [],
-        array     $context = []
-    ): void
-    {
+        array $uriVariables = [],
+        array $context = []
+    ): void {
         $bids = $data->getBids();
         $highestOffer = $bids->getHighestOffer();
 
