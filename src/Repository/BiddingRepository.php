@@ -3,7 +3,7 @@
 namespace App\Repository;
 
 use ApiPlatform\Doctrine\Orm\Paginator;
-use App\Entity\Bid;
+use App\Entity\Bidding;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Common\Collections\Criteria;
 use Doctrine\ORM\NonUniqueResultException;
@@ -12,21 +12,21 @@ use Doctrine\ORM\Tools\Pagination\Paginator as DoctrinePaginator;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
- * @extends ServiceEntityRepository<Bid>
+ * @extends ServiceEntityRepository<Bidding>
  *
- * @method Bid|null find($id, $lockMode = null, $lockVersion = null)
- * @method Bid|null findOneBy(array $criteria, array $orderBy = null)
- * @method Bid[]    findAll()
- * @method Bid[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
+ * @method Bidding|null find($id, $lockMode = null, $lockVersion = null)
+ * @method Bidding|null findOneBy(array $criteria, array $orderBy = null)
+ * @method Bidding[]    findAll()
+ * @method Bidding[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  */
-class BidRepository extends ServiceEntityRepository
+class BiddingRepository extends ServiceEntityRepository
 {
     public function __construct(ManagerRegistry $registry)
     {
-        parent::__construct($registry, Bid::class);
+        parent::__construct($registry, Bidding::class);
     }
 
-    public function save(Bid $entity, bool $flush = false): void
+    public function save(Bidding $entity, bool $flush = false): void
     {
         $this->getEntityManager()->persist($entity);
 
@@ -35,7 +35,7 @@ class BidRepository extends ServiceEntityRepository
         }
     }
 
-    public function remove(Bid $entity, bool $flush = false): void
+    public function remove(Bidding $entity, bool $flush = false): void
     {
         $this->getEntityManager()->remove($entity);
 
