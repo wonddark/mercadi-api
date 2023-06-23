@@ -32,12 +32,11 @@ class BiddingVoter extends Voter
      * @return bool
      */
     protected function voteOnAttribute(
-        string         $attribute,
+        string $attribute,
         /* @var Bidding $subject */
-        mixed          $subject,
+        mixed $subject,
         TokenInterface $token
-    ): bool
-    {
+    ): bool {
         /* @var User $user */
         $user = $token->getUser();
         if (!$user instanceof UserInterface) {

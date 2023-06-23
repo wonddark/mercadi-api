@@ -18,12 +18,11 @@ class BiddingCloser implements ProcessorInterface
 
     public function process(
         /* @var Bidding $data */
-        mixed     $data,
+        mixed $data,
         Operation $operation,
-        array     $uriVariables = [],
-        array     $context = []
-    ): void
-    {
+        array $uriVariables = [],
+        array $context = []
+    ): void {
         if ($data->isOpen()) {
             $data->setOpen(false);
             try {
