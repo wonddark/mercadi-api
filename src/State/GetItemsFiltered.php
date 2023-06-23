@@ -20,6 +20,6 @@ class GetItemsFiltered implements ProviderInterface
         return $this
             ->manager
             ->getRepository(Item::class)
-            ->searchByNameOrDescription($pattern, $page, $itemsPerPage);
+            ->searchByDescription($pattern, $page, $itemsPerPage);
     }
 }
