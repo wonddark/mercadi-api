@@ -172,6 +172,26 @@ class Item
     ])]
     private ?int $homeDelivery = 0;
 
+    /*
+     * Home delivery values as small int
+     * null => Not applicable
+     * 0 => New
+     * 1 => Used but flawless
+     * 2 => Used with minor details
+     * 3 => Working with aesthetics details
+     * 4 => Refurbished
+     * 5 => For pieces
+     */
+    #[ORM\Column(type: Types::SMALLINT, nullable: true)]
+    #[Groups([
+        "item:post:read",
+        "item:post:write",
+        "item:patch:read",
+        "item:patch:write",
+        "item:general:read"
+    ])]
+    private ?int $conditionStatus = null;
+
     public function __construct()
     {
         $this->publishedAt = new DateTimeImmutable();
@@ -322,6 +342,18 @@ class Item
     public function setHomeDelivery(int $homeDelivery): self
     {
         $this->homeDelivery = $homeDelivery;
+
+        return $this;
+    }
+
+    public function getConditionStatus(): ?int
+    {
+        return $this->conditionStatus;
+    }
+
+    public function setConditionStatus(?int $conditionStatus): static
+    {
+        $this->conditionStatus = $conditionStatus;
 
         return $this;
     }
